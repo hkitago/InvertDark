@@ -18,9 +18,9 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 2. If you want to disable dark mode or if the color inversion doesn't look right, simply click the icon again to revert the changes.
 
 ## Icon States
-- **Extension Disabled:** <img src="https://github.com/hkitago/InvertDark/blob/main/Shared%20(Extension)/Resources/images/toolbar-icon.svg" height="24"/>
-- **Extension Active:** <img src="https://github.com/hkitago/InvertDark/blob/main/Shared%20(Extension)/Resources/images/toolbar-icon-dark.svg" height="24"/>
-- **Dark Theme Detected:** <img src="https://github.com/hkitago/InvertDark/blob/main/Shared%20(Extension)/Resources/images/toolbar-icon-site-dark.svg" height="24"/>
+- **Extension Disabled:** <img src="https://github.com/hkitago/InvertDark/blob/main/Shared%20(Extension)/Resources/images/toolbar-icon.svg" style="vertical-align: middle; background-color: white; height: 24px;"/>
+- **Extension Active:** <img src="https://github.com/hkitago/InvertDark/blob/main/Shared%20(Extension)/Resources/images/toolbar-icon-dark.svg" style="vertical-align: middle; background-color: white; height: 24px;"/>
+- **Dark Theme Detected:** <img src="https://github.com/hkitago/InvertDark/blob/main/Shared%20(Extension)/Resources/images/toolbar-icon-site-dark.svg" style="vertical-align: middle; background-color: white; height: 24px;"/>
 
 ## Compatibility
 
@@ -45,6 +45,6 @@ You can reach me via [email](mailto:hkitago@gmail.com).
 ## Additional Information
 
 ### Related Links
-- [Get extensions to customize Safari on iPhone - Apple Support](https://support.apple.com/guide/iphone/iphab0432bf6/18.0/ios/18.0)
 - [Get extensions to customize Safari on Mac - Apple Support](https://support.apple.com/guide/safari/get-extensions-sfri32508/mac)
+- [Get extensions to customize Safari on iPhone - Apple Support](https://support.apple.com/guide/iphone/iphab0432bf6/18.0/ios/18.0)
 - Privacy Policy Page: [Privacy Policy – hkitago software dev](https://hkitago.com/wpautoterms/privacy-policy/)
