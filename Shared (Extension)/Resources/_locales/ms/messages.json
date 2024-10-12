@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "SongsangGelap",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Sambungan ini menggunakan mod gelap dengan cepat dan mengekalkannya aktif selama yang diperlukan.",
+        "description": "Description of what the extension does."
+    }
+}

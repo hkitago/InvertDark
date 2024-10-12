@@ -1,5 +1,40 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.9375 15.9453">
-  <path d="M7.96875 15.9375C12.3281 15.9375 15.9375 12.3203 15.9375 7.96875C15.9375 3.60938 12.3203 0 7.96094 0C3.60938 0 0 3.60938 0 7.96875C0 12.3203 3.61719 15.9375 7.96875 15.9375ZM7.96875 14.6094C4.28125 14.6094 1.33594 11.6562 1.33594 7.96875C1.33594 4.28125 4.27344 1.32812 7.96094 1.32812C11.6484 1.32812 14.6094 4.28125 14.6094 7.96875C14.6094 11.6562 11.6562 14.6094 7.96875 14.6094Z" />
-  <path d="M4.53906 8.50781C4.53906 8.70312 4.69531 8.84375 4.89844 8.84375L7.54688 8.84375L6.13281 12.6406C5.94531 13.1406 6.47656 13.4141 6.80469 13.0078L11.0859 7.63281C11.1719 7.53906 11.2188 7.42969 11.2188 7.32812C11.2188 7.13281 11.0625 6.99219 10.8594 6.99219L8.21094 6.99219L9.625 3.19531C9.8125 2.69531 9.28125 2.42188 8.95312 2.82031L4.67188 8.19531C4.58594 8.29688 4.53906 8.40625 4.53906 8.50781Z" />
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   viewBox="0 0 15.9375 15.9453"
+   id="svg2"
+   sodipodi:docname="toolbar-icon.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   inkscape:export-filename="export/toolbar-icon.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="namedview2"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="48.362081"
+     inkscape:cx="-1.2509801"
+     inkscape:cy="8.8602474"
+     inkscape:window-width="3440"
+     inkscape:window-height="1384"
+     inkscape:window-x="0"
+     inkscape:window-y="264"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2"
+     showguides="true" />
+  <path
+     d="M 13.825829,9.563975 C 13.662186,9.4003795 13.415582,9.3523337 13.202576,9.4425666 12.569133,9.7108652 11.897411,9.8469084 11.205947,9.8469084 9.8405256,9.8469084 8.5569368,9.3152289 7.5915041,8.3497729 6.1110747,6.8693896 5.6821686,4.666932 6.498781,2.7387726 6.5890157,2.5256726 6.5409733,2.2791619 6.3773257,2.1155662 6.2137302,1.9519234 5.9671248,1.9039952 5.7541195,1.9942286 5.0130807,2.3081727 4.3473812,2.7573371 3.7755143,3.3292509 2.5952408,4.5094774 1.9453292,6.0786347 1.9454702,7.7476951 c 1.445e-4,1.668825 0.6501,3.2377929 1.8301858,4.4179259 1.1802731,1.180297 2.7495245,1.830302 4.4185846,1.830302 1.6688019,0 3.2377954,-0.649911 4.4179274,-1.830042 0.571936,-0.571938 1.021078,-1.237614 1.335023,-1.978605 0.09025,-0.2131001 0.04226,-0.4596349 -0.121362,-0.623301 z"
+     id="path1-0"
+     style="fill:none;stroke:#000000;stroke-width:1.77375;stroke-dasharray:none;stroke-opacity:1" />
 </svg>

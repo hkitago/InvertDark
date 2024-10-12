@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "反转暗黑",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "这个扩展程序可以快速应用深色模式，并在需要时保持其激活状态。",
+        "description": "Description of what the extension does."
+    }
+}

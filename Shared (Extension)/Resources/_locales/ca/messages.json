@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertFosc",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Aquesta extensió aplica el mode fosc ràpidament i el manté actiu tant temps com sigui necessari.",
+        "description": "Description of what the extension does."
+    }
+}

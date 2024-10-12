@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "OdwróćCiemność",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "To rozszerzenie szybko włącza tryb ciemny i utrzymuje go aktywnym tak długo, jak to konieczne.",
+        "description": "Description of what the extension does."
+    }
+}

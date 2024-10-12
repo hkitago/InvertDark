@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertDonker",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Deze extensie past de donkere modus snel toe en houdt deze zo lang als nodig actief.",
+        "description": "Description of what the extension does."
+    }
+}

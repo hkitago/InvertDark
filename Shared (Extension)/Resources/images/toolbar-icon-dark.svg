@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   viewBox="0 0 15.9375 15.9453"
+   id="svg2"
+   sodipodi:docname="toolbar-icon-dark.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   inkscape:export-filename="export/toolbar-icon-dark.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="namedview2"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="43.317105"
+     inkscape:cx="1.3620485"
+     inkscape:cy="7.2834968"
+     inkscape:window-width="3440"
+     inkscape:window-height="1384"
+     inkscape:window-x="0"
+     inkscape:window-y="264"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2"
+     showguides="true" />
+  <path
+     d="M 7.96875,15.9375 C 3.6094,15.9375 0,12.3203 0,7.96875 0,3.60938 3.6172,0 7.97656,0 c 4.35156,0 7.96094,3.60938 7.96094,7.96875 0,4.35155 -3.61719,7.96875 -7.96875,7.96875 z m 0,-1.3281 c 3.6875,0 6.63281,-2.9532 6.63281,-6.64065 0,-3.6875 -2.9375,-6.64063 -6.625,-6.64063 -3.68746,0 -6.64846,2.95313 -6.64846,6.64063 0,3.68745 2.9532,6.64065 6.64065,6.64065 z"
+     id="path1"
+     style="display:inline" />
+  <path
+     d="M 12.654345,9.2457743 C 12.52343,9.1148979 12.326147,9.0764613 12.155742,9.1486476 11.648988,9.3632865 11.11161,9.472121 10.558439,9.472121 9.466102,9.472121 8.439231,9.0467774 7.6668848,8.2744126 6.4825413,7.090106 6.1394164,5.3281399 6.7927063,3.7856124 6.8648941,3.6151324 6.8264602,3.4179238 6.6955421,3.2870473 6.5646657,3.156133 6.3673814,3.1177905 6.1969771,3.1899772 5.6041461,3.4411325 5.0715865,3.800464 4.614093,4.257995 3.6698742,5.2021762 3.1499449,6.4575021 3.1500577,7.7927504 c 1.156e-4,1.33506 0.52008,2.5902346 1.4641486,3.5343406 0.9442185,0.944238 2.1996196,1.464242 3.5348677,1.464242 1.3350415,0 2.590236,-0.519929 3.534342,-1.464034 0.457549,-0.45755 0.816862,-0.990091 1.068018,-1.5828841 0.0722,-0.1704799 0.03381,-0.3677077 -0.09709,-0.4986406 z"
+     id="path1-0"
+     style="stroke-width:0.0188229" />
+</svg>

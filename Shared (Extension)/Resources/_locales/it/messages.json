@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertiScuro",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Questa estensione applica rapidamente la modalità scura e la mantiene attiva per tutto il tempo necessario.",
+        "description": "Description of what the extension does."
+    }
+}

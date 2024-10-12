@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertirOscuro",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Esta extensión aplica el modo oscuro rápidamente y lo mantiene activo durante el tiempo que sea necesario.",
+        "description": "Description of what the extension does."
+    }
+}

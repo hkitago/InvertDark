@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "ИнвертТьма",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Это расширение быстро применяет тёмный режим и поддерживает его активным столько, сколько необходимо.",
+        "description": "Description of what the extension does."
+    }
+}

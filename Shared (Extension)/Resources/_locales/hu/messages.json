@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertSötét",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Ez a bővítmény gyorsan alkalmazza a sötét módot, és addig tartja aktívan, ameddig szükséges.",
+        "description": "Description of what the extension does."
+    }
+}

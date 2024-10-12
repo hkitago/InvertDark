@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "היפוך חושך",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "הרחבה זו מחילה מצב כהה במהירות ושומרת עליו פעיל כל עוד נדרש.",
+        "description": "Description of what the extension does."
+    }
+}

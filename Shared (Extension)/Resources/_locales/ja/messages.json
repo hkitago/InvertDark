@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "反転ダークモード",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "この拡張機能はダークモードを素早く適用し、必要な間ずっとアクティブに保ちます。",
+        "description": "Description of what the extension does."
+    }
+}

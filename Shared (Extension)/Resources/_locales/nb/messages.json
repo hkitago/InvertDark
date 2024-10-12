@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertMørk",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Denne utvidelsen aktiverer mørk modus raskt og holder den aktiv så lenge det er nødvendig.",
+        "description": "Description of what the extension does."
+    }
+}

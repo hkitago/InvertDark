@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertMörker",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Detta tillägg applicerar mörkt läge snabbt och håller det aktivt så länge det behövs.",
+        "description": "Description of what the extension does."
+    }
+}

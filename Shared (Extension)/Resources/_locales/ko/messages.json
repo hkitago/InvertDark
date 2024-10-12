@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "인버트다크",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "이 확장 프로그램은 다크 모드를 빠르게 적용하고 필요한 만큼 오래 활성 상태로 유지합니다.",
+        "description": "Description of what the extension does."
+    }
+}

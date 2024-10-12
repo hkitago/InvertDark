@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "ĐảoNgược Tối",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Tiện ích mở rộng này áp dụng chế độ tối một cách nhanh chóng và giữ nó hoạt động trong thời gian cần thiết.",
+        "description": "Description of what the extension does."
+    }
+}

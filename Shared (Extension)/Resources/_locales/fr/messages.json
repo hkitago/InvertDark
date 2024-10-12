@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertSombre",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Cette extension applique rapidement le mode sombre et le maintient actif aussi longtemps que nécessaire.",
+        "description": "Description of what the extension does."
+    }
+}

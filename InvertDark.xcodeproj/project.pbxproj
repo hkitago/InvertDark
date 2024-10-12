@@ -54,6 +54,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		60815BA32CBA06E8002715F5 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		60815BA42CBA06E8002715F5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		6090C8052CB6109300FDE319 /* InvertDark.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InvertDark.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6090C8172CB6109300FDE319 /* InvertDark.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InvertDark.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6090C8232CB6109300FDE319 /* InvertDark Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "InvertDark Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -66,6 +68,7 @@
 			membershipExceptions = (
 				"/Localized: Resources/Main.html",
 				Assets.xcassets,
+				Localizable.xcstrings,
 				Resources/Icon.png,
 				Resources/Script.js,
 				Resources/Style.css,
@@ -92,6 +95,7 @@
 			membershipExceptions = (
 				"/Localized: Resources/Main.html",
 				Assets.xcassets,
+				Localizable.xcstrings,
 				Resources/Icon.png,
 				Resources/Script.js,
 				Resources/Style.css,
@@ -114,9 +118,6 @@
 				Resources/content.js,
 				Resources/images,
 				Resources/manifest.json,
-				Resources/popup.css,
-				Resources/popup.html,
-				Resources/popup.js,
 				SafariWebExtensionHandler.swift,
 			);
 			target = 6090C8222CB6109300FDE319 /* InvertDark Extension (iOS) */;
@@ -129,9 +130,6 @@
 				Resources/content.js,
 				Resources/images,
 				Resources/manifest.json,
-				Resources/popup.css,
-				Resources/popup.html,
-				Resources/popup.js,
 				SafariWebExtensionHandler.swift,
 			);
 			target = 6090C82C2CB6109300FDE319 /* InvertDark Extension (macOS) */;
@@ -227,6 +225,8 @@
 		6090C7E82CB6109200FDE319 = {
 			isa = PBXGroup;
 			children = (
+				60815BA32CBA06E8002715F5 /* LICENSE */,
+				60815BA42CBA06E8002715F5 /* README.md */,
 				6090C7ED2CB6109200FDE319 /* Shared (App) */,
 				6090C7F62CB6109300FDE319 /* Shared (Extension) */,
 				6090C8072CB6109300FDE319 /* iOS (App) */,
@@ -373,6 +373,44 @@
 			knownRegions = (
 				en,
 				Base,
+				ar,
+				ca,
+				"zh-Hans",
+				"zh-Hant",
+				hr,
+				cs,
+				da,
+				de,
+				"en-AU",
+				"en-CA",
+				"en-GB",
+				fi,
+				fr,
+				"fr-CA",
+				nl,
+				el,
+				he,
+				hi,
+				hu,
+				id,
+				it,
+				ja,
+				ko,
+				ms,
+				nb,
+				pl,
+				"pt-BR",
+				"pt-PT",
+				ro,
+				ru,
+				sk,
+				es,
+				"es-MX",
+				sv,
+				th,
+				tr,
+				uk,
+				vi,
 			);
 			mainGroup = 6090C7E82CB6109200FDE319;
 			minimizedProjectReferenceProxies = 1;
@@ -792,6 +830,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -846,6 +885,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};

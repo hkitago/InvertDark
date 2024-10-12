@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertGelap",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Ekstensi ini menerapkan mode gelap dengan cepat dan mempertahankannya selama diperlukan.",
+        "description": "Description of what the extension does."
+    }
+}

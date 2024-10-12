@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertTamno",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Ovaj dodatak brzo primjenjuje tamni način rada i održava ga aktivnim koliko god je potrebno.",
+        "description": "Description of what the extension does."
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "InvertMørk",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Denne udvidelse genererer tekst med kilde-URL'en tilføjet til det valgte indhold.",
+        "description": "Description of what the extension does."
+    }
+}
