@@ -18,9 +18,9 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 2. If you want to disable dark mode or if the color inversion doesn't look right, simply click the icon again to revert the changes.
 
 ## Icon States
-- **Extension Disabled:** <img src="https://github.com/hkitago/InvertDark/blob/main/Shared%20(Extension)/Resources/images/toolbar-icon.svg" style="vertical-align: middle; background-color: white; height: 24px;"/>
-- **Extension Active:** <img src="https://github.com/hkitago/InvertDark/blob/main/Shared%20(Extension)/Resources/images/toolbar-icon-dark.svg" style="vertical-align: middle; background-color: white; height: 24px;"/>
-- **Dark Theme Detected:** <img src="https://github.com/hkitago/InvertDark/blob/main/Shared%20(Extension)/Resources/images/toolbar-icon-site-dark.svg" style="vertical-align: middle; background-color: white; height: 24px;"/>
+- **Extension Disabled:** <img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon.svg" height="24" valign="bottom"/>
+- **Extension Active:** <img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-dark.svg" height="24" valign="bottom"/>
+- **Dark Theme Detected:** <img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-site-dark.svg" height="24" valign="bottom"/>
 
 ## Compatibility
 
@@ -28,7 +28,7 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 
 ## Built With
 
-This app uses icon materials provided under the MIT License by [framework7io](https://github.com/framework7io/framework7-icons).
+This app uses icon materials provided by [framework7io](https://github.com/framework7io/framework7-icons).
 
 ## License
 
