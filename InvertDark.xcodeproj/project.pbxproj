@@ -117,6 +117,7 @@
 				Resources/background.js,
 				Resources/content.js,
 				Resources/images,
+				"Resources/invert-dark.css",
 				Resources/manifest.json,
 				SafariWebExtensionHandler.swift,
 			);
@@ -129,6 +130,7 @@
 				Resources/background.js,
 				Resources/content.js,
 				Resources/images,
+				"Resources/invert-dark.css",
 				Resources/manifest.json,
 				SafariWebExtensionHandler.swift,
 			);

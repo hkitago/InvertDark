@@ -34,15 +34,13 @@
   /* Core dark mode functions */
   const applyInvertDark = () => {
     if (isInvertDarkActive()) return;
-    
-    const style = document.createElement('style');
-    style.id = 'InvertDarkStyle';
-    style.textContent = `
-      body { filter: invert(1) hue-rotate(180deg); background-color: rgb(35 35 33) !important; }
-      img, video, svg, canvas { filter: invert(1) hue-rotate(180deg); }
-    `;
-    
-    document.head.appendChild(style);
+
+    const link = document.createElement('link');
+    link.id = 'InvertDarkStyle';
+    link.rel = 'stylesheet';
+    link.href = browser.runtime.getURL('invert-dark.css');
+
+    document.head.appendChild(link);
   };
   
   const removeInvertDark = () => {

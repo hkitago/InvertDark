@@ -30,5 +30,10 @@
         "default_icon": "images/toolbar-icon.svg"
     },
 
-    "permissions": [ "storage", "tabs", "activeTab" ]
+    "permissions": [ "storage", "tabs", "activeTab" ],
+    
+    "web_accessible_resources": [{
+        "resources": ["invert-dark.css"],
+        "matches": [ "http://*/*", "https://*/*" ]
+    }]
 }
