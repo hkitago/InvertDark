@@ -18,12 +18,22 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 2. If you want to disable dark mode or if the color inversion doesn't look right, simply click the icon again to revert the changes.
 
 ## Icon States
-- **Extension Disabled:** <img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon.svg" height="24" valign="bottom"/>
-- **Extension Active:** <img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-dark.svg" height="24" valign="bottom"/>
-- **Dark Theme Detected:** <img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-site-dark.svg" height="24" valign="bottom"/>
+- **Extension Disabled:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon.svg" height="24" valign="bottom"/></code>
+- **Extension Active:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-dark.svg" height="24" valign="bottom"/></code>
+- **Dark Theme Detected:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-site-dark.svg" height="24" valign="bottom"/></code>
+
+## macOS Version History
+
+### [macOS 1.1] - 2024-10-16
+- Improved compatibility with page styles and streamlined design settings
+- Added support for all languages in the App Store
+
+### [macOS 1.0] - 2024-10-13
+- Initial release with basic features
 
 ## Compatibility
 
+- iOS/iPadOS 15+
 - macOS 10.14+
 
 ## Built With
@@ -45,6 +55,8 @@ You can reach me via [email](mailto:hkitago@gmail.com).
 ## Additional Information
 
 ### Related Links
+- App Store: [InvertDark on the App Store](https://apps.apple.com/app/invertdark-for-safari/id6736727849)
 - [Get extensions to customize Safari on Mac - Apple Support](https://support.apple.com/guide/safari/get-extensions-sfri32508/mac)
 - [Get extensions to customize Safari on iPhone - Apple Support](https://support.apple.com/guide/iphone/iphab0432bf6/18.0/ios/18.0)
 - Privacy Policy Page: [Privacy Policy – hkitago software dev](https://hkitago.com/wpautoterms/privacy-policy/)
+- Support Page: [hkitago/InvertDark](https://github.com/hkitago/InvertDark/)
