@@ -47,7 +47,7 @@ const updateIcon = (iconState) => {
       iconPath = "images/toolbar-icon.svg";
       break;
   }
-  console.log('updateIcon:', iconState);
+  //console.log('updateIcon:', iconState);
   browser.action.setIcon({ path: iconPath });
 };
 
