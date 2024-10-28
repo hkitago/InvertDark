@@ -1,3 +1,15 @@
+// When enabled with tabs already open, just tricky part for Safari
+browser.runtime.onInstalled.addListener(async () => {
+  const tabs = await browser.tabs.query({});
+
+  for (const tab of tabs) {
+    if (tab.url.startsWith('http') || tab.url.startsWith('https')) {
+      await browser.tabs.reload(tab.id);
+    }
+  }
+});
+
+// Main action
 browser.action.onClicked.addListener((tab) => {
   browser.tabs.sendMessage(tab.id, { action: "performAction" });
 });

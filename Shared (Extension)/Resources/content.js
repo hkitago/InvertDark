@@ -1,7 +1,4 @@
-(() => {
-  if (window.darkModeExtensionLoaded) return;
-  window.darkModeExtensionLoaded = true;
-  
+(() => {  
   /* Global state variables */
   let iconState = 'default';
   let isSiteDarkThemeDetected = false;
@@ -22,9 +19,8 @@
   };
   
   const saveDarkModeDomains = async (domains) => {
+    const uniqueDomains = [...new Set(domains)];
     try {
-      const uniqueDomains = [...new Set(domains)];
-      
       await browser.storage.local.set({ darkModeDomains: uniqueDomains });
     } catch (e) {
       console.error('Failed to save data to browser storage:', e);
@@ -72,8 +68,8 @@
     updateToolbarIcon();
   };
   
-  browser.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-    if (request.action === "performAction") {
+  browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+    if (message.action === "performAction") {
       try {
         await toggleInvertDarkMode();
       } catch (error) {
