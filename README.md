@@ -26,20 +26,28 @@ This issue arises from technical limitations, and this design considers battery 
 - **Extension Active:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-dark.svg" height="24" valign="bottom"/></code>
 - **Dark Theme Detected:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-site-dark.svg" height="24" valign="bottom"/></code>
 
-## iOS/iPadOS Version History
+## Version History
 
-### 1.1 - 2024-10-23
+### 1.2 - 2024-10-30
 
+- Fixed issues with enabling the extension on already opened web pages.
+
+### 1.1
+#### **iOS/iPadOS** - 2024-10-23
 - Initial release with extended features from macOS version
 
-## macOS Version History
-
-### 1.1 - 2024-10-16
+#### **macOS** - 2024-10-16
 - Improved compatibility with page styles and streamlined design settings
 - Added support for all languages in the App Store
 
-### 1.0 - 2024-10-13
+### 1.0
+
+#### **macOS** - 2024-10-13
 - Initial release with basic features
+
+## Known Issues
+
+If the extension does not function correctly immediately after installation, especially for iPhone users, please restart Safari or refresh the relevant page. This issue arises from technical limitations, and this design considers battery life and device performance. We appreciate your understanding and are prepared to respond quickly to any future updates from Apple that may address this issue.
 
 ## Compatibility
 
@@ -60,7 +68,7 @@ The inspiration for this project came from a bookmarklet I developed and shared 
 
 ## Contact
 
-You can reach me via [email](mailto:hkitago@icloud.com).
+You can reach me via [email](mailto:hkitago@icloud.com?subject=Support%20for%20InvertDark).
 
 ## Additional Information
 
