@@ -20,18 +20,18 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 1. Click the icon next to the address bar to activate the extension and apply dark mode.
 2. If you want to disable dark mode or if the color inversion doesn't look right, simply click the icon again to revert the changes.
 
-### Note:
-
-If the extension does not function correctly immediately after installation, especially for iPhone users, please restart Safari or refresh the relevant page.  
-This issue arises from technical limitations, and this design considers battery life and device performance. We appreciate your understanding and are prepared to respond quickly to any future updates from Apple that may address this issue.
-
 ## Icon States
 
-- **Extension Disabled:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon.svg" height="24" valign="bottom"/></code>
+- **Extension Inactive by Default:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon.svg" height="24" valign="bottom"/></code>
 - **Extension Active:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-dark.svg" height="24" valign="bottom"/></code>
 - **Dark Theme Detected:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-site-dark.svg" height="24" valign="bottom"/></code>
 
 ## Version History
+
+### 1.3 - 2024-11-22
+
+- Fixed video and background image inversion for better display
+- Updated app icon to custom design
 
 ### 1.2 - 2024-10-30
 
@@ -54,18 +54,10 @@ This issue arises from technical limitations, and this design considers battery 
 
 - Initial release with basic features
 
-## Known Issues
-
-If the extension does not function correctly immediately after installation, especially for iPhone users, please restart Safari or refresh the relevant page. This issue arises from technical limitations, and this design considers battery life and device performance. We appreciate your understanding and are prepared to respond quickly to any future updates from Apple that may address this issue.
-
 ## Compatibility
 
 - iOS/iPadOS 15+
 - macOS 10.14+
-
-## Built With
-
-This app uses icon materials provided by [framework7io](https://github.com/framework7io/framework7-icons).
 
 ## License
 
@@ -74,6 +66,8 @@ This project is open-source and available under the [MIT License](LICENSE). Feel
 ## Acknowledgments
 
 The inspiration for this project came from a bookmarklet I developed and shared on GitHub Gist. You can view it [here](https://gist.github.com/hkitago/ef7aa6876254500cc27623c92a30fa2d). I would like to acknowledge the role of the bookmarklet in shaping the idea for the this extension and helping to bring it to fruition.
+
+I would like to thank [framework7io](https://github.com/framework7io/framework7-icons) for providing the icon materials that were used in previous versions of the app.
 
 ## Contact
 
