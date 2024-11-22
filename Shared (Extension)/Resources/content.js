@@ -1,5 +1,5 @@
 (() => {  
-  /* Global state variables */
+  /* Global variables */
   let iconState = 'default';
   let isSiteDarkThemeDetected = false;
   
@@ -46,7 +46,7 @@
   };
   
   const updateToolbarIcon = () => {
-    browser.runtime.sendMessage({ action: "updateIcon", iconState: iconState });
+    browser.runtime.sendMessage({ action: 'updateIcon', iconState: iconState });
   };
   
   /* Main function to toggle dark mode on/off */
@@ -59,7 +59,7 @@
       removeInvertDark();
       darkModeDomains.splice(darkModeDomains.indexOf(currentDomain), 1);
     } else {
-      iconState = "extension-dark";
+      iconState = 'extension-dark';
       applyInvertDark();
       darkModeDomains.push(currentDomain);
     }
@@ -69,11 +69,11 @@
   };
   
   browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    if (message.action === "performAction") {
+    if (message.action === 'performAction') {
       try {
         await toggleInvertDarkMode();
       } catch (error) {
-        console.error("Error in content script: ", error);
+        console.error('Error in content script: ', error);
       }
     }
   });
@@ -105,7 +105,7 @@
         
         observer.observe(document.documentElement, { childList: true });
       }
-      iconState = "extension-dark";
+      iconState = 'extension-dark';
       updateToolbarIcon();
     }
   };
@@ -184,7 +184,7 @@
     isSiteDarkThemeDetected = findLargeDarkElements();
     
     if (isSiteDarkThemeDetected) {
-      iconState = "site-dark";
+      iconState = 'site-dark';
     }
     updateToolbarIcon();
   };
@@ -201,7 +201,7 @@
     const darkModeDomains = await getDarkModeDomains();
 
     if (darkModeDomains.includes(currentDomain)) {
-      iconState = "extension-dark";
+      iconState = 'extension-dark';
       applyInvertDark();
     } else {
       iconState = isSiteDarkThemeDetected ? 'site-dark' : 'default';
@@ -212,8 +212,76 @@
   
   /* Listen for messages from the background script */
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === "updatePageAction") {
+    if (message.action === 'updatePageAction') {
       updatePage();
     }
   });
+
+  /* Add custom class for background-images */
+  const detectBackgroundImageElements = () => {
+    const extractBackgroundUrls = bgImage => {
+      return [...bgImage.matchAll(/url\(['"]?(.*?)['"]?\)/g)].map(match => match[1]);
+    };
+
+    const checkBackgroundForElement = (element) => {
+      const style = window.getComputedStyle(element);
+      const beforeStyle = window.getComputedStyle(element, '::before');
+      const afterStyle = window.getComputedStyle(element, '::after');
+      
+      const checkAndSetClass = (style, pseudo = '') => {
+        if (style.backgroundImage && style.backgroundImage !== 'none') {
+          element.classList.add('invertdark-ext-bg-images');
+          element.setAttribute(`data${pseudo ? `-${pseudo}` : ''}-background-urls`, JSON.stringify(extractBackgroundUrls(style.backgroundImage)));
+        }
+      };
+
+      checkAndSetClass(style);
+      checkAndSetClass(beforeStyle, 'before');
+      checkAndSetClass(afterStyle, 'after');
+    };
+
+    const processNodeTree = (node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        checkBackgroundForElement(node);
+        Array.from(node.children).forEach(child => processNodeTree(child));
+      }
+    };
+
+    Array.from(document.getElementsByTagName('*')).forEach(checkBackgroundForElement);
+
+    const observer = new MutationObserver(mutations => {
+      resetIdleTimer();
+      mutations.forEach(mutation => {
+        Array.from(mutation.addedNodes).forEach(processNodeTree);
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    let idleTimer;
+    const idleTimeout = 3000;
+
+    const resetIdleTimer = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        observer.disconnect();
+        console.log('MutationObserver has been stopped due to inactivity.');
+      }, idleTimeout);
+    };
+
+    resetIdleTimer();
+
+    return observer;
+  };
+  
+  // Init with tricky part https://developer.apple.com/forums/thread/651215
+  if (document.readyState !== 'loading') {
+    detectBackgroundImageElements();
+  } else {
+   document.addEventListener('DOMContentLoaded', detectBackgroundImageElements);
+  }
+
 })();
