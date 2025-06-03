@@ -1,3 +1,4 @@
 html { background-color: transparent !important; }
 body { filter: invert(1) hue-rotate(180deg); background-color: rgb(35, 35, 33) !important; background-image: none !important; }
 img, video, svg, canvas, iframe, .invertdark-ext-bg-images { filter: invert(1) hue-rotate(180deg) !important; }
+a.invertdark-ext-bg-images { color: #FFF !important; }

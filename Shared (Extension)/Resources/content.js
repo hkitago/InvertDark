@@ -268,7 +268,6 @@
       if (idleTimer) clearTimeout(idleTimer);
       idleTimer = setTimeout(() => {
         observer.disconnect();
-        console.log('MutationObserver has been stopped due to inactivity.');
       }, idleTimeout);
     };
 
