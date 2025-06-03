@@ -223,7 +223,15 @@
       return [...bgImage.matchAll(/url\(['"]?(.*?)['"]?\)/g)].map(match => match[1]);
     };
 
+    const hasChildImages = (element) => {
+      return element.querySelector('img') !== null;
+    };
+
     const checkBackgroundForElement = (element) => {
+      if (hasChildImages(element)) {
+        return;
+      }
+
       const style = window.getComputedStyle(element);
       const beforeStyle = window.getComputedStyle(element, '::before');
       const afterStyle = window.getComputedStyle(element, '::after');
