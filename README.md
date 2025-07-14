@@ -28,6 +28,13 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 
 ## Version History
 
+### 1.3.1 - 2024-06-04
+
+- Improved image detection for a better dark mode experience.
+- Fixed an issue where links on some websites were hard to read due to low contrast with the background.
+- Adjusted app names and phrasing in certain languages to improve localization.
+- Changed the minimum version requirement for compatibility.
+
 ### 1.3 - 2024-11-22
 
 - Fixed video and background image inversion for better display
