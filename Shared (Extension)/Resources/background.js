@@ -46,7 +46,7 @@ browser.windows.onFocusChanged.addListener(async (windowId) => {
 });
 
 // Update icon logic
-const updateIcon = (iconState) => {
+const updateIcon = async (iconState, tabId = null) => {
   let iconPath;
   switch (iconState) {
     case 'extension-dark':
@@ -59,12 +59,26 @@ const updateIcon = (iconState) => {
       iconPath = 'images/toolbar-icon.svg';
       break;
   }
-  //console.log('updateIcon:', iconState);
-  browser.action.setIcon({ path: iconPath });
+
+  if (tabId === null) {
+    try {
+      const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+      tabId = tab?.id;
+    } catch (error) {
+      console.warn('Failed to get active tab:', error);
+    }
+  }
+
+  if (tabId !== null) {
+    browser.action.setIcon({ path: iconPath, tabId });
+  } else {
+    console.warn('No valid tabId. Skipping icon update.');
+  }
 };
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'updateIcon') {
-    updateIcon(message.iconState);
+    const tabId = sender.tab.id;
+    updateIcon(message.iconState, tabId);
   }
 });
