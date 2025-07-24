@@ -12,8 +12,8 @@
     try {
       const result = await browser.storage.local.get('darkModeDomains');
       return result.darkModeDomains || [];
-    } catch (e) {
-      console.error('Storage is unavailable or insecure:', e);
+    } catch (error) {
+      console.error('Storage is unavailable or insecure:', error);
       return [];
     }
   };
@@ -22,8 +22,8 @@
     const uniqueDomains = [...new Set(domains)];
     try {
       await browser.storage.local.set({ darkModeDomains: uniqueDomains });
-    } catch (e) {
-      console.error('Failed to save data to browser storage:', e);
+    } catch (error) {
+      console.error('Failed to save data to browser storage:', error);
     }
   };
   
