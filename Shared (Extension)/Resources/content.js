@@ -217,6 +217,38 @@
     }
   });
 
+  /* Recursively process shadow DOMs and apply inversion filter to IMG/VIDEO elements */
+  const processShadowImagesRecursively = (root) => {
+    try {
+      const walker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_ELEMENT,
+        {
+          acceptNode: (node) => {
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        },
+        false
+      );
+
+      let currentNode = walker.currentNode;
+      while (currentNode) {
+        if (currentNode.tagName === 'IMG' || currentNode.tagName === 'VIDEO') {
+          console.log(currentNode);
+          currentNode.style.setProperty('filter', 'invert(1) hue-rotate(180deg)', 'important');
+        }
+        
+        if (currentNode.shadowRoot && currentNode.shadowRoot.mode === 'open') {
+          processShadowImagesRecursively(currentNode.shadowRoot);
+        }
+
+        currentNode = walker.nextNode();
+      }
+    } catch (e) {
+      // Ignorance Safety
+    }
+  };
+
   /* Add custom class for background-images */
   const detectBackgroundImageElements = () => {
     const extractBackgroundUrls = bgImage => {
@@ -228,9 +260,7 @@
     };
 
     const checkBackgroundForElement = (element) => {
-      if (hasChildImages(element)) {
-        return;
-      }
+      if (hasChildImages(element)) return;
 
       const style = window.getComputedStyle(element);
       const beforeStyle = window.getComputedStyle(element, '::before');
@@ -246,6 +276,11 @@
       checkAndSetClass(style);
       checkAndSetClass(beforeStyle, 'before');
       checkAndSetClass(afterStyle, 'after');
+
+      // Handling for Shadow DOM
+      if (element.shadowRoot && element.shadowRoot.mode === 'open') {
+        processShadowImagesRecursively(element.shadowRoot);
+      }
     };
 
     const processNodeTree = (node) => {
@@ -271,7 +306,6 @@
 
     let idleTimer;
     const idleTimeout = 3000;
-
     const resetIdleTimer = () => {
       if (idleTimer) clearTimeout(idleTimer);
       idleTimer = setTimeout(() => {
@@ -280,15 +314,13 @@
     };
 
     resetIdleTimer();
-
     return observer;
   };
-  
+
   // Init with tricky part https://developer.apple.com/forums/thread/651215
   if (document.readyState !== 'loading') {
     detectBackgroundImageElements();
   } else {
    document.addEventListener('DOMContentLoaded', detectBackgroundImageElements);
   }
-
 })();
