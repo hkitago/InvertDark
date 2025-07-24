@@ -399,10 +399,10 @@ function show(platform, enabled, useSettingsInsteadOfPreferences) {
   document.body.classList.add(`platform-${platform}`);
 
   if (useSettingsInsteadOfPreferences) {
-    document.getElementsByClassName('platform-mac state-on')[0].innerText = labelStrings[langCode].macOn;
-    document.getElementsByClassName('platform-mac state-off')[0].innerText = labelStrings[langCode].macOff;
-    document.getElementsByClassName('platform-mac state-unknown')[0].innerText = labelStrings[langCode].macUnknown;
-    document.getElementsByClassName('platform-mac open-preferences')[0].innerText = labelStrings[langCode].macPreferences;
+    document.getElementsByClassName('platform-mac state-on')[0].innerText = getLabelString('macOn');
+    document.getElementsByClassName('platform-mac state-off')[0].innerText = getLabelString('macOff');
+    document.getElementsByClassName('platform-mac state-unknown')[0].innerText = getLabelString('macUnknown');
+    document.getElementsByClassName('platform-mac open-preferences')[0].innerText = getLabelString('macPreferences');
   }
 
   if (typeof enabled === "boolean") {
