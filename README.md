@@ -1,4 +1,4 @@
-# InvertDark for Safari Extension
+# <img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(App)/Resources/Icon.png" height="36" valign="bottom"/> InvertDark for Safari Extension
 
 This Safari extension quickly applies dark mode using color inversion and keeps it active as long as you need it. With one simple activation, dark mode stays on until you choose to change it, making browsing more comfortable across different websites and repeat visits.
 
@@ -19,6 +19,9 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 
 1. Click the icon next to the address bar to activate the extension and apply dark mode.
 2. If you want to disable dark mode or if the color inversion doesn't look right, simply click the icon again to revert the changes.
+
+> [!NOTE]  
+> The extension remembers whether dark mode was enabled or disabled for each site, based on the domain name (`window.location.hostname`). This means the setting is applied to all pages within the same domain. For example, if dark mode is turned on for `example.com`, it will also be active on `example.com/page1`, `example.com/page2`, and so on. However, different subdomains such as `blog.example.com` and `shop.example.com` are treated as separate sites.
 
 ## Icon States
 
