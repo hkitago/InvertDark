@@ -31,6 +31,11 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 
 ## Version History
 
+### 1.3.2 - 2024-07-25
+
+- Fixed display issues with certain videos and their thumbnail images for a better viewing experience
+- Refined toolbar icon display logic to ensure consistent and stable operation
+
 ### 1.3.1 - 2024-06-04
 
 - Improved image detection for a better dark mode experience.
