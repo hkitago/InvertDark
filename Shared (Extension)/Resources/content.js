@@ -307,7 +307,12 @@
     };
 
     const hasChildImages = (element) => {
-      return element.querySelector('img') !== null;
+      for (const child of element.children) {
+        if (child.tagName === 'IMG') {
+          return true;
+        }
+      }
+      return false;
     };
 
     const checkBackgroundForElement = (element) => {
@@ -317,11 +322,20 @@
       const beforeStyle = window.getComputedStyle(element, '::before');
       const afterStyle = window.getComputedStyle(element, '::after');
 
+      const extractBackgroundUrls = (bgImage) => {
+        const matches = [...bgImage.matchAll(/url\(['"]?(.*?)['"]?\)/g)];
+        return matches.map(match => match[1]);
+      };
+
       const checkAndSetClass = (style, pseudo = '') => {
-        if (style.backgroundImage && style.backgroundImage !== 'none') {
-          element.classList.add('invertdark-ext-bg-images');
-          element.setAttribute(`data${pseudo ? `-${pseudo}` : ''}-background-urls`, JSON.stringify(extractBackgroundUrls(style.backgroundImage)));
-        }
+        const bgImage = style.backgroundImage;
+        if (!bgImage || bgImage === 'none') return;
+
+        const urls = extractBackgroundUrls(bgImage);
+        if (urls.length === 0) return;
+
+        element.classList.add('invertdark-ext-bg-images');
+        element.setAttribute(`data${pseudo ? `-${pseudo}` : ''}-background-urls`, JSON.stringify(urls));
       };
 
       checkAndSetClass(style);
