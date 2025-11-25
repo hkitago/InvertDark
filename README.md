@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(App)/Resources/Icon.png" height="36" valign="bottom"/> InvertDark for Safari Extension
+# <img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/icon.svg" height="36" valign="bottom"/> InvertDark for Safari Extension
 
 This Safari extension quickly applies dark mode using color inversion and keeps it active as long as you need it. With one simple activation, dark mode stays on until you choose to change it, making browsing more comfortable across different websites and repeat visits.
 
@@ -30,6 +30,10 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 - **Dark Theme Detected:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-site-dark.svg" height="24" valign="bottom"/></code>
 
 ## Version History
+
+### 1.3.3 - 2024-10-23
+
+- Updated for the latest OS with new user interface and theme-optimized icons
 
 ### 1.3.2 - 2024-07-25
 
