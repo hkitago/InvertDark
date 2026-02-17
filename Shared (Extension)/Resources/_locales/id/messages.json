@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Ekstensi ini menerapkan mode gelap dengan cepat dan mempertahankannya selama diperlukan.",
+        "message": "Menerapkan mode gelap ke halaman web secara instan dan menjaga pengaturan tetap aktif sesuai kebutuhan.",
         "description": "Description of what the extension does."
     }
 }

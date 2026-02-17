@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Это расширение быстро применяет тёмный режим и поддерживает его активным столько, сколько необходимо.",
+        "message": "Мгновенно применяет тёмный режим к веб-страницам и сохраняет настройку активной по мере необходимости.",
         "description": "Description of what the extension does."
     }
 }

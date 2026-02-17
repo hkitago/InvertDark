@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "यह एक्सटेंशन डार्क मोड को त्वरित रूप से लागू करता है और जब तक आवश्यक हो तब तक इसे सक्रिय रखता है।",
+        "message": "वेब पेजों पर तुरंत डार्क मोड लागू करता है और आवश्यकतानुसार सेटिंग को सक्रिय रखता है।",
         "description": "Description of what the extension does."
     }
 }

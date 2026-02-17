@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Ez a bővítmény gyorsan alkalmazza a sötét módot, és addig tartja aktívan, ameddig szükséges.",
+        "message": "Azonnal alkalmazza a sötét módot a weboldalakra, és szükség szerint aktívan tartja a beállítást.",
         "description": "Description of what the extension does."
     }
 }

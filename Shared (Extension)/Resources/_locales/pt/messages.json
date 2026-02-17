@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Esta extensão aplica o modo escuro rapidamente e mantém-no ativo pelo tempo necessário.",
+        "message": "Aplica o modo escuro às páginas web instantaneamente e mantém a configuração ativa conforme necessário.",
         "description": "Description of what the extension does."
     }
 }

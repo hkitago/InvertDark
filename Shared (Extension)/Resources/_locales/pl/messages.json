@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "To rozszerzenie szybko włącza tryb ciemny i utrzymuje go aktywnym tak długo, jak to konieczne.",
+        "message": "Natychmiast stosuje tryb ciemny do stron internetowych i utrzymuje ustawienie aktywne w razie potrzeby.",
         "description": "Description of what the extension does."
     }
 }

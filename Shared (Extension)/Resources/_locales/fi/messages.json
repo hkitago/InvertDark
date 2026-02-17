@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Tämä laajennus luo tekstiä, jossa on lähde-URL lisättynä valittuun sisältöön.",
+        "message": "Ottaa tumman tilan käyttöön verkkosivuilla välittömästi ja pitää asetuksen aktiivisena tarpeen mukaan.",
         "description": "Description of what the extension does."
     }
 }

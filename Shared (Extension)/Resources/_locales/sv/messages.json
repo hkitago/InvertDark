@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Detta tillägg applicerar mörkt läge snabbt och håller det aktivt så länge det behövs.",
+        "message": "Tillämpar mörkt läge på webbsidor omedelbart och håller inställningen aktiv vid behov.",
         "description": "Description of what the extension does."
     }
 }

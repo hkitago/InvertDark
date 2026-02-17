@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "这个扩展程序可以快速应用深色模式，并在需要时保持其激活状态。",
+        "message": "即时为网页应用深色模式，并根据需要保持设置处于活动状态。",
         "description": "Description of what the extension does."
     }
 }

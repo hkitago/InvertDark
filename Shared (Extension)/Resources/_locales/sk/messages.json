@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Toto rozšírenie rýchlo aplikuje tmavý režim a udržiava ho aktívny tak dlho, ako je potrebné.",
+        "message": "Okamžite aplikuje tmavý režim na webové stránky a udržiava nastavenie aktívne podľa potreby.",
         "description": "Description of what the extension does."
     }
 }

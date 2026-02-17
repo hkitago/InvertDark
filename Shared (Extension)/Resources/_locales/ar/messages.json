@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "يطبق هذا الامتداد الوضع الداكن بسرعة ويحافظ على تفعيله طالما كان ذلك ضروريًا.",
+        "message": "يطبق الوضع الداكن على صفحات الويب فورًا ويحافظ على الإعداد نشطًا حسب الحاجة.",
         "description": "Description of what the extension does."
     }
 }

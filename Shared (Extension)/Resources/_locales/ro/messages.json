@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Această extensie aplică rapid modul întunecat și îl menține activ atât timp cât este necesar.",
+        "message": "Aplică modul întunecat pe paginile web instantaneu și menține setarea activă după necesitate.",
         "description": "Description of what the extension does."
     }
 }

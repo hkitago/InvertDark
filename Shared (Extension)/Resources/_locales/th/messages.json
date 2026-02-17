@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "ส่วนขยายนี้ใช้โหมดมืดอย่างรวดเร็วและคงสถานะใช้งานไว้นานเท่าที่ต้องการ",
+        "message": "ใช้โหมดมืดกับหน้าเว็บทันทีและรักษาการตั้งค่าให้ทำงานอยู่ตามต้องการ",
         "description": "Description of what the extension does."
     }
 }

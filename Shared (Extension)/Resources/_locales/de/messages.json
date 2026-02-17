@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Diese Erweiterung aktiviert den Dunkelmodus schnell und hält ihn so lange aktiv wie benötigt.",
+        "message": "Wendet den Dunkelmodus sofort auf Webseiten an und hält die Einstellung nach Bedarf aktiv.",
         "description": "Description of what the extension does."
     }
 }

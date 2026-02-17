@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Ovaj dodatak brzo primjenjuje tamni način rada i održava ga aktivnim koliko god je potrebno.",
+        "message": "Trenutno primjenjuje tamni način na web stranice i održava postavku aktivnom prema potrebi.",
         "description": "Description of what the extension does."
     }
 }

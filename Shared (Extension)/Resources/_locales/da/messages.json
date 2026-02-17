@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Denne udvidelse genererer tekst med kilde-URL'en tilføjet til det valgte indhold.",
+        "message": "Anvender mørk tilstand på websider øjeblikkeligt og holder indstillingen aktiv efter behov.",
         "description": "Description of what the extension does."
     }
 }

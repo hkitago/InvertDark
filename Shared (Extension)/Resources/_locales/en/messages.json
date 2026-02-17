@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "This extension applies dark mode quickly and keeps it active for as long as needed.",
+        "message": "Applies dark mode to web pages instantly and keeps the setting active as needed.",
         "description": "Description of what the extension does."
     }
 }

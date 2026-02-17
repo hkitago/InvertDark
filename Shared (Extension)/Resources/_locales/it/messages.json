@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Questa estensione applica rapidamente la modalità scura e la mantiene attiva per tutto il tempo necessario.",
+        "message": "Applica la modalità scura alle pagine web istantaneamente e mantiene l'impostazione attiva secondo necessità.",
         "description": "Description of what the extension does."
     }
 }

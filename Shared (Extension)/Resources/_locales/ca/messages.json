@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Aquesta extensió aplica el mode fosc ràpidament i el manté actiu tant temps com sigui necessari.",
+        "message": "Aplica el mode fosc a les pàgines web a l'instant i manté la configuració activa segons sigui necessari.",
         "description": "Description of what the extension does."
     }
 }

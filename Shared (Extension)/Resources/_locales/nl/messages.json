@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Deze extensie past de donkere modus snel toe en houdt deze zo lang als nodig actief.",
+        "message": "Past direct de donkere modus toe op webpagina's en houdt de instelling actief indien nodig.",
         "description": "Description of what the extension does."
     }
 }

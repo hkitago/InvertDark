@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "この拡張機能はダークモードを素早く適用し、必要な間ずっとアクティブに保ちます。",
+        "message": "ウェブページに即座にダークモードを適用し、必要に応じて設定を維持します。",
         "description": "Description of what the extension does."
     }
 }

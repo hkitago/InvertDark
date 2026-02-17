@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "הרחבה זו מחילה מצב כהה במהירות ושומרת עליו פעיל כל עוד נדרש.",
+        "message": "מחיל מצב כהה על דפי אינטרנט באופן מיידי ושומר על ההגדרה פעילה לפי הצורך.",
         "description": "Description of what the extension does."
     }
 }

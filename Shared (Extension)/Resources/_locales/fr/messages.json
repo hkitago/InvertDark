@@ -4,7 +4,7 @@
         "description": "The display name for the extension."
     },
     "extension_description": {
-        "message": "Cette extension applique rapidement le mode sombre et le maintient actif aussi longtemps que nécessaire.",
+        "message": "Active le mode sombre sur les pages web instantanément et maintient le paramètre actif selon les besoins.",
         "description": "Description of what the extension does."
     }
 }
