@@ -6,12 +6,16 @@
     {
       "layers" : [
         {
-          "image-name" : "icon-moon 2.svg",
-          "name" : "icon-moon 2"
-        },
-        {
-          "image-name" : "icon-circle 2.svg",
-          "name" : "icon-circle 2"
+          "glass" : true,
+          "image-name" : "icon 2.svg",
+          "name" : "icon 2",
+          "position" : {
+            "scale" : 0.95,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
         }
       ],
       "shadow" : {
