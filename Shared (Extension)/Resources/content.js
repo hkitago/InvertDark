@@ -3,388 +3,221 @@
   let iconState = 'default';
   let isSiteDarkThemeDetected = false;
 
+  const IS_TOP_FRAME = window.self === window.top;
+
+  const STYLE_ID = 'InvertDarkStyle';
   const FILTER_VAL = 'invert(1) hue-rotate(180deg)';
 
-  // WeakRef-based structure to track modified nodes safely for GC
-  let nodeRefs;
-  let registry;
-
-  if (typeof WeakRef !== 'undefined' && typeof FinalizationRegistry !== 'undefined') {
-    nodeRefs = new Set();
-    registry = new FinalizationRegistry((heldRef) => {
-      nodeRefs.delete(heldRef);
-    });
-  } else {
-    console.warn('[InvertDarkExtension] WeakRef/FinalizationRegistry not supported — skipping weak tracking.');
-    nodeRefs = null;
-    registry = null;
-  }
-
-  const rememberNode = (node) => {
-    if (!nodeRefs || !registry) return;
-
-    const ref = new WeakRef(node);
-    nodeRefs.add(ref);
-    registry.register(node, ref);
-  };
-
-  const isInvertDarkActive = () => {
-    return document.getElementById('InvertDarkStyle') !== null;
-  };
-
-  /* Storage management */
-  const getDarkModeDomains = async () => {
-    try {
-      const result = await browser.storage.local.get('darkModeDomains');
-      return result.darkModeDomains || [];
-    } catch (error) {
-      console.error('[InvertDarkExtension] Storage is unavailable or insecure:', error);
-      return [];
+  const CSS_CONTENT = `
+    html[data-invertdark-active="true"]:not([data-dark-mode-context="sub-frame"]) {
+      background-color: rgb(35, 35, 33) !important;
     }
-  };
 
-  const saveDarkModeDomains = async (domains) => {
-    const uniqueDomains = [...new Set(domains)];
-    try {
-      await browser.storage.local.set({ darkModeDomains: uniqueDomains });
-    } catch (error) {
-      console.error('[InvertDarkExtension] Failed to save data to browser storage:', error);
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] {
+      background-color: transparent !important;
+      filter: none !important;
     }
-  };
 
-  /* Utility to set inline filter */
-  const setFilterOnNode = (node) => {
-    try {
-      if (!(node instanceof Element)) return;
-
-      rememberNode(node);
-
-      if (isInvertDarkActive()) {
-        node.style.setProperty('filter', FILTER_VAL, 'important');
-      }
-    } catch (e) {
-      // ignore non-Element nodes and access errors
+    img, video, svg, canvas, .invertdark-ext-bg-images {
+      filter: var(--invertdark-re-invert, none) !important;
     }
+  `;
+
+  const ensureDarkModeStyles = (root = document) => {
+    if (!root || root.getElementById(STYLE_ID)) return;
+    const style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = CSS_CONTENT;
+    (root.head || root.documentElement || root).appendChild(style);
   };
 
-  const toggleFilterOnShadows = () => {
-    try {
-      for (const ref of nodeRefs) {
-        const node = ref.deref();
-        if (!node || !(node instanceof Element)) continue;
-        if (isInvertDarkActive()) {
-          node.style.setProperty('filter', FILTER_VAL, 'important');
-        } else {
-          node.style.removeProperty('filter');
-        }
-      }
-    } catch (e) {
-      // ignore reapply errors
-    }
-  };
+  const applyFinalState = (enabled) => {
+    const html = document.documentElement;
+    const isSubFrame = window.self !== window.top;
 
-  /* Core dark mode functions */
-  const applyInvertDark = () => {
-    if (isInvertDarkActive()) return;
+    html.setAttribute('data-invertdark-active', enabled ? 'true' : 'false');
 
-    const link = document.createElement('link');
-    link.id = 'InvertDarkStyle';
-    link.rel = 'stylesheet';
-    link.href = browser.runtime.getURL('invert-dark.css');
-
-    document.head.appendChild(link);
-  };
-
-  const removeInvertDark = () => {
-    if (isInvertDarkActive()) {
-      document.getElementById('InvertDarkStyle').remove();
-    }
-  };
-
-  const updateToolbarIcon = () => {
-    browser.runtime.sendMessage({ action: 'updateIcon', iconState: iconState });
-  };
-
-  /* Main function to toggle dark mode on/off */
-  const toggleInvertDarkMode = async () => {
-    const currentDomain = window.location.hostname;
-    const darkModeDomains = await getDarkModeDomains();
-
-    if (isInvertDarkActive()) {
-      iconState = isSiteDarkThemeDetected ? 'site-dark' : 'default';
-      removeInvertDark();
-      darkModeDomains.splice(darkModeDomains.indexOf(currentDomain), 1);
+    if (isSubFrame) {
+      html.setAttribute('data-dark-mode-context', 'sub-frame');
+      html.style.filter = 'none';
     } else {
-      iconState = 'extension-dark';
-      applyInvertDark();
-      darkModeDomains.push(currentDomain);
+      html.style.filter = enabled ? FILTER_VAL : 'none';
+    }
+    html.style.setProperty('--invertdark-re-invert', enabled ? FILTER_VAL : 'none');
+
+    if (!IS_TOP_FRAME) {
+      html.setAttribute('data-dark-mode-context', 'sub-frame');
     }
 
-    toggleFilterOnShadows();
-    
-    await saveDarkModeDomains(darkModeDomains);
-    updateToolbarIcon();
+    if (IS_TOP_FRAME) {
+      updateIconState(enabled);
+    }
   };
 
-  browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    if (message.action === 'performAction') {
-      try {
-        await toggleInvertDarkMode();
-      } catch (error) {
-        console.error('[InvertDarkExtension] Error in content script: ', error);
+  const syncStateWithBackground = async () => {
+    try {
+      const response = await browser.runtime.sendMessage({ action: 'checkState' });
+      if (response && typeof response.enabled === 'boolean') {
+        applyFinalState(response.enabled);
       }
-    }
-  });
-
-  /* Initialize dark mode based on stored settings */
-  const initInvertDark = async () => {
-    /* Debug: await browser.storage.local.clear(); return; */
-    const currentDomain = window.location.hostname;
-    const darkModeDomains = await getDarkModeDomains();
-
-    if (darkModeDomains.includes(currentDomain)) {
-      if (document.head) {
-      applyInvertDark();
-      } else {
-        // waiting for head tag
-        const observer = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          if (mutation.addedNodes) {
-            for (const node of mutation.addedNodes) {
-              if (node.nodeName.toLowerCase() === 'head') {
-                applyInvertDark();
-                observer.disconnect();
-                return;
-              }
-            }
-          }
-        }
-      });
-
-      observer.observe(document.documentElement, { childList: true });
-    }
-      iconState = 'extension-dark';
-      updateToolbarIcon();
+    } catch (error) {
+      const res = await browser.storage.local.get('darkModeDomains');
+      const domains = res.darkModeDomains || [];
+      applyFinalState(domains.includes(window.location.hostname));
     }
   };
 
-  initInvertDark();
+  /* MutationObserver for Shadow DOM and Background Images */
+  const processNodeTree = (node) => {
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
 
-  /* Detect Site Dark Theme */
-  const isDarkColor = (rgb) => {
-    const [r, g, b] = rgb;
-    // Relative luminance formula for dark color
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance < 0.5; // Dark if luminance is below 0.5
-  };
-
-  const getComputedBackgroundColor = (element) => {
-    let currentElement = element;
-    let backgroundColor;
-    while (currentElement) {
-      backgroundColor = window.getComputedStyle(currentElement).backgroundColor;
-      if (backgroundColor !== 'rgba(0, 0, 0, 0)' && backgroundColor !== 'transparent') {
-        return backgroundColor;
-      }
-      currentElement = currentElement.parentElement;
+    // Handle Shadow DOM
+    if (node.shadowRoot && node.shadowRoot.mode === 'open') {
+      ensureDarkModeStyles(node.shadowRoot);
+      Array.from(node.shadowRoot.children).forEach(processNodeTree);
     }
-    // If all elements are transparent, default to white (common browser default)
-    return 'rgb(255, 255, 255)';
+
+    // Existing background detection logic (keep class-based)
+    checkBackgroundForElement(node);
+    Array.from(node.children).forEach(processNodeTree);
   };
 
-  const getRGBColor = (element) => {
-    const bgColor = getComputedBackgroundColor(element);
-    if (bgColor.startsWith('rgb')) {
-      return bgColor.match(/\d+/g).slice(0, 3).map(Number);
+  const updateIconState = (enabled) => {
+    let state = 'default';
+    if (enabled) {
+      state = 'extension-dark';
+    } else if (isSiteDarkThemeDetected) {
+      state = 'site-dark';
     }
-    return null;
+    browser.runtime.sendMessage({ action: 'UPDATE_ICON', iconState: state });
   };
 
-  const findLargeDarkElements = () => {
-  const windowHeight = window.innerHeight;
-  const windowWidth = window.innerWidth;
-  const largeElements = [];
-
-  document.querySelectorAll('*').forEach(element => {
-    const rect = element.getBoundingClientRect();
-    const computedStyle = window.getComputedStyle(element);
-
-    if (computedStyle.opacity === '0') return;
-
-    if (rect.width >= windowWidth && rect.height >= windowHeight / 2 && rect.top < windowHeight / 3 && rect.bottom >= windowHeight ) {
-      const rgb = getRGBColor(element);
-      if (rgb && isDarkColor(rgb)) {
-        const zIndex = computedStyle.zIndex;
-        largeElements.push({ element, zIndex: parseInt(zIndex) || 0 });
-        //console.log('Checked element:', element, 'RGB:', rgb);
-      }
+  const checkBackgroundForElement = (element) => {
+    const style = window.getComputedStyle(element);
+    if (style.backgroundImage && style.backgroundImage !== 'none') {
+      element.classList.add('invertdark-ext-bg-images');
     }
-  });
-
-  const topElement = largeElements.reduce((max, current) => {
-    return current.zIndex > max.zIndex ? current : max;
-  }, { zIndex: -Infinity });
-
-  if (topElement.element) {
-    const rgb = getRGBColor(topElement.element);
-    //console.log('Top element:', topElement.element, 'RGB:', rgb, 'isDarkColor:', rgb ? isDarkColor(rgb) : 'N/A');
-    return rgb ? isDarkColor(rgb) : false;
-  }
-
-  const htmlBodyRgb = getRGBColor(document.documentElement) || getRGBColor(document.body);
-    //console.log('HTML/Body RGB:', htmlBodyRgb, 'isDarkColor:', htmlBodyRgb ? isDarkColor(htmlBodyRgb) : 'N/A');
-    return htmlBodyRgb ? isDarkColor(htmlBodyRgb) : false;
   };
 
+  /* Detection & Background processing */
+//  const detectSiteDarkTheme = () => {
+//   const getRGB = (el) => {
+//     const bg = window.getComputedStyle(el).backgroundColor;
+//     return bg.startsWith('rgb') ? bg.match(/\d+/g).map(Number) : null;
+//   };
+//   const isDark = (rgb) => (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 < 0.5;
+//
+//   const bodyRgb = document.body ? getRGB(document.body) : getRGB(document.documentElement);
+//   isSiteDarkThemeDetected = bodyRgb ? isDark(bodyRgb) : false;
+//  };
+
+//     const detectSiteDarkTheme = () => {
+//       isSiteDarkThemeDetected = findLargeDarkElements();
+//       if (isSiteDarkThemeDetected && document.documentElement.getAttribute('data-invertdark-active') !== 'true') {
+//         iconState = 'site-dark';
+//         browser.runtime.sendMessage({ action: 'UPDATE_ICON', iconState: iconState });
+//       }
+//     };
+//
+//     const isDarkColor = (rgb) => {
+//       const [r, g, b] = rgb;
+//       return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.5;
+//     };
+//     const getRGBColor = (el) => {
+//       const bg = window.getComputedStyle(el).backgroundColor;
+//       if (bg.startsWith('rgb')) return bg.match(/\d+/g).slice(0, 3).map(Number);
+//       return null;
+//     };
+//     const findLargeDarkElements = () => {
+//       const htmlBodyRgb = getRGBColor(document.documentElement) || (document.body ? getRGBColor(document.body) : null);
+//       return htmlBodyRgb ? isDarkColor(htmlBodyRgb) : false;
+//     };
+
+  
   const detectSiteDarkTheme = () => {
-    if (isInvertDarkActive()) return;
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+    const largeElements = [];
 
-    isSiteDarkThemeDetected = findLargeDarkElements();
+    document.querySelectorAll('*').forEach(element => {
+      const rect = element.getBoundingClientRect();
+      const computedStyle = window.getComputedStyle(element);
 
-    if (isSiteDarkThemeDetected) {
-      iconState = 'site-dark';
+      if (computedStyle.opacity === '0') return;
+
+      if (rect.width >= windowWidth && rect.height >= windowHeight / 2 && rect.top < windowHeight / 3 && rect.bottom >= windowHeight ) {
+        const rgb = getRGBColor(element);
+        if (rgb && isDarkColor(rgb)) {
+          const zIndex = computedStyle.zIndex;
+          largeElements.push({ element, zIndex: parseInt(zIndex) || 0 });
+          //console.log('Checked element:', element, 'RGB:', rgb);
+        }
+      }
+    });
+
+    const topElement = largeElements.reduce((max, current) => {
+      return current.zIndex > max.zIndex ? current : max;
+    }, { zIndex: -Infinity });
+
+    if (topElement.element) {
+      const rgb = getRGBColor(topElement.element);
+      //console.log('Top element:', topElement.element, 'RGB:', rgb, 'isDarkColor:', rgb ? isDarkColor(rgb) : 'N/A');
+      return rgb ? isDarkColor(rgb) : false;
     }
-    updateToolbarIcon();
+
+    const htmlBodyRgb = getRGBColor(document.documentElement) || getRGBColor(document.body);
+    //console.log('HTML/Body RGB:', htmlBodyRgb, 'isDarkColor:', htmlBodyRgb ? isDarkColor(htmlBodyRgb) : 'N/A');
+//    return htmlBodyRgb ? isDarkColor(htmlBodyRgb) : false;
+    iconState = isDarkColor(htmlBodyRgb) ? 'site-dark' : iconState;
   };
 
-  /* Update page and icon state based on current settings and site theme */
-  const updatePage = async () => {
-    const currentDomain = window.location.hostname;
-    const darkModeDomains = await getDarkModeDomains();
-
-    if (darkModeDomains.includes(currentDomain)) {
-      iconState = 'extension-dark';
-      applyInvertDark();
-    } else {
-      iconState = isSiteDarkThemeDetected ? 'site-dark' : 'default';
-      removeInvertDark();
-    }
-    updateToolbarIcon();
-  };
-
-  /* Listen for messages from the background script */
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'updatePageAction') {
-      updatePage();
+  // ========================================
+  // Event listeners
+  // ========================================
+  browser.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && changes.darkModeDomains) {
+      syncStateWithBackground();
     }
   });
 
-  /* Recursively process shadow DOMs and apply inversion filter to IMG/VIDEO elements */
-  const processShadowImagesRecursively = (root) => {
-    try {
-      const walker = document.createTreeWalker(
-        root,
-        NodeFilter.SHOW_ELEMENT,
-        {
-          acceptNode: (node) => {
-            return NodeFilter.FILTER_ACCEPT;
-          }
-        },
-        false
-      );
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible') return;
+    syncStateWithBackground();
+  });
 
-      let currentNode = walker.currentNode;
-      while (currentNode) {
-        if (currentNode.tagName === 'IMG' || currentNode.tagName === 'VIDEO') {
-          setFilterOnNode(currentNode);
-        }
+  window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) return;
+    syncStateWithBackground();
+  });
 
-        if (currentNode.shadowRoot && currentNode.shadowRoot.mode === 'open') {
-          processShadowImagesRecursively(currentNode.shadowRoot);
-        }
+  // ========================================
+  // Initialization
+  // ========================================
+  let isInitialized = false;
+  const initializeContent = () => {
+    if (isInitialized) return;
+    isInitialized = true;
 
-        currentNode = walker.nextNode();
-      }
-    } catch (e) {
-      // Ignorance Safety
-    }
-  };
+    ensureDarkModeStyles(document);
+    syncStateWithBackground();
 
-  /* Add custom class for background-images */
-  const detectBackgroundImageElements = () => {
-    const extractBackgroundUrls = bgImage => {
-      return [...bgImage.matchAll(/url\(['"]?(.*?)['"]?\)/g)].map(match => match[1]);
-    };
-
-    const hasChildImages = (element) => {
-      for (const child of element.children) {
-        if (child.tagName === 'IMG') {
-          return true;
-        }
-      }
-      return false;
-    };
-
-    const checkBackgroundForElement = (element) => {
-      if (hasChildImages(element)) return;
-
-      const style = window.getComputedStyle(element);
-      const beforeStyle = window.getComputedStyle(element, '::before');
-      const afterStyle = window.getComputedStyle(element, '::after');
-
-      const extractBackgroundUrls = (bgImage) => {
-        const matches = [...bgImage.matchAll(/url\(['"]?(.*?)['"]?\)/g)];
-        return matches.map(match => match[1]);
-      };
-
-      const checkAndSetClass = (style, pseudo = '') => {
-        const bgImage = style.backgroundImage;
-        if (!bgImage || bgImage === 'none') return;
-
-        const urls = extractBackgroundUrls(bgImage);
-        if (urls.length === 0) return;
-
-        element.classList.add('invertdark-ext-bg-images');
-        element.setAttribute(`data${pseudo ? `-${pseudo}` : ''}-background-urls`, JSON.stringify(urls));
-      };
-
-      checkAndSetClass(style);
-      checkAndSetClass(beforeStyle, 'before');
-      checkAndSetClass(afterStyle, 'after');
-
-      // Handling for Shadow DOM
-      if (element.shadowRoot && element.shadowRoot.mode === 'open') {
-        processShadowImagesRecursively(element.shadowRoot);
-      }
-    };
-
-    const processNodeTree = (node) => {
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        checkBackgroundForElement(node);
-        Array.from(node.children).forEach(child => processNodeTree(child));
-      }
-    };
-
-    Array.from(document.getElementsByTagName('*')).forEach(checkBackgroundForElement);
+//    if (IS_TOP_FRAME) {
+//      detectSiteDarkTheme();
+//      browser.runtime.sendMessage({ action: 'UPDATE_ICON', iconState: iconState });
+//    }
 
     const observer = new MutationObserver(mutations => {
-      resetIdleTimer();
       mutations.forEach(mutation => {
-        Array.from(mutation.addedNodes).forEach(processNodeTree);
+        mutation.addedNodes.forEach(processNodeTree);
       });
     });
 
-    observer.observe(document.body, {
+    observer.observe(document.documentElement || document.body, {
       childList: true,
       subtree: true
     });
 
-    let idleTimer;
-    const idleTimeout = 3000;
-    const resetIdleTimer = () => {
-      if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(() => {
-        observer.disconnect();
-      }, idleTimeout);
-    };
-
-    resetIdleTimer();
-    return observer;
-  };
-
-  const initializeContent = () => {
-    detectSiteDarkTheme();
-    detectBackgroundImageElements();
+    processNodeTree(document.documentElement);
   };
 
   if (document.readyState !== 'loading') {

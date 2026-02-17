@@ -4,7 +4,7 @@
 
     "name": "__MSG_extension_name__",
     "description": "__MSG_extension_description__",
-    "version": "1.3.3",
+    "version": "26.1",
 
     "icons": {
         "48": "images/icon.svg",
@@ -18,7 +18,9 @@
     },
 
     "content_scripts": [{
+        "css": ["invertdark-ext.css"],
         "js": [ "content.js" ],
+        "all_frames": true,
         "matches": [ "http://*/*", "https://*/*" ],
         "run_at": "document_start"
     }],
@@ -27,10 +29,5 @@
         "default_icon": "images/toolbar-icon.svg"
     },
 
-    "permissions": [ "storage", "tabs", "activeTab" ],
-    
-    "web_accessible_resources": [{
-        "resources": ["invert-dark.css"],
-        "matches": [ "http://*/*", "https://*/*" ]
-    }]
+    "permissions": [ "storage", "tabs", "activeTab" ]
 }

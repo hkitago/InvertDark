@@ -1,52 +1,37 @@
-// When enabled with tabs already open, just tricky part for Safari
-browser.runtime.onInstalled.addListener(async () => {
-  const tabs = await browser.tabs.query({});
-
-  for (const tab of tabs) {
-    if (tab.url.startsWith('http') || tab.url.startsWith('https')) {
-      await browser.tabs.reload(tab.id);
-    }
-  }
-});
-
-// Main action
-browser.action.onClicked.addListener((tab) => {
-  browser.tabs.sendMessage(tab.id, { action: 'performAction' });
-});
-
-// Listen for when a tab is activated
-browser.tabs.onActivated.addListener(async (activeInfo) => {
+// ========================================
+// Storage management
+// ========================================
+const getDarkModeSites = async () => {
   try {
-    const tab = await browser.tabs.get(activeInfo.tabId);
-    browser.tabs.sendMessage(tab.id, { action: 'updatePageAction' });
+    const result = await browser.storage.local.get('darkModeDomains');
+    return result.darkModeDomains || [];
   } catch (error) {
-    console.error('Error updating page on tab activation:', error);
+    console.warn('[InvertDarkExtension] Fail to get sites from storage:', error);
+    return [];
   }
-});
+};
 
-// Listen for when a tab is updated (e.g., page loaded or reloaded)
-browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete') {
-    browser.tabs.sendMessage(tabId, { action: 'updatePageAction' });
+const saveDarkModeSites = async (sites) => {
+  const uniqueDomains = [...new Set(sites)];
+  try {
+    await browser.storage.local.set({ darkModeDomains: uniqueDomains });
+  } catch (error) {
+    console.error('[InvertDarkExtension] Failed to save data to browser storage:', error);
   }
-});
+};
 
-// Listen for when the window focus changes (e.g., switching to a different window)
-browser.windows.onFocusChanged.addListener(async (windowId) => {
-  if (windowId !== browser.windows.WINDOW_ID_NONE) {
-    try {
-      const tabs = await browser.tabs.query({ active: true, windowId });
-      if (tabs.length > 0) {
-        browser.tabs.sendMessage(tabs[0].id, { action: 'updatePageAction' });
-      }
-    } catch (error) {
-      console.error('Error updating page on window focus:', error);
-    }
+const extractUrl = (url) => {
+  try {
+    return new URL(url).hostname;
+  } catch (error) {
+    return url;
   }
-});
+};
 
-// Update icon logic
-const updateIcon = async (iconState, tabId = null) => {
+// ========================================
+// Icon Handlings
+// ========================================
+const updateToolbarIcon = async (iconState, tabId = null) => {
   let iconPath;
   switch (iconState) {
     case 'extension-dark':
@@ -61,24 +46,42 @@ const updateIcon = async (iconState, tabId = null) => {
   }
 
   if (tabId === null) {
-    try {
-      const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-      tabId = tab?.id;
-    } catch (error) {
-      console.warn('Failed to get active tab:', error);
-    }
+    const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+    tabId = activeTab?.id;
   }
 
-  if (tabId !== null) {
-    browser.action.setIcon({ path: iconPath, tabId });
-  } else {
-    console.warn('No valid tabId. Skipping icon update.');
-  }
+  browser.action.setIcon({ path: iconPath, tabId });
 };
 
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'updateIcon') {
+// ========================================
+// Event Listeners
+// ========================================
+browser.action.onClicked.addListener(async (tab) => {
+  try {
+    const darkModeSites = await getDarkModeSites();
+    const currentHostname = extractUrl(tab?.url);
+    const hasDarkModeSites = darkModeSites.includes(currentHostname);
+    if (hasDarkModeSites) {
+      darkModeSites.splice(darkModeSites.indexOf(currentHostname), 1);
+    } else {
+      darkModeSites.push(currentHostname);
+    }
+    await saveDarkModeSites(darkModeSites);
+  } catch (error) {
+    console.error('[InvertDarkExtension] Failed to toggle the extension:', error);
+  }
+});
+
+browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+  if (message.action === 'checkState') {
+    const darkModeSites = await getDarkModeSites();
+    const currentHostname = extractUrl(sender.tab.url);
+    return { enabled: darkModeSites.includes(currentHostname) };
+  }
+
+  if (message.action === 'UPDATE_ICON') {
     const tabId = sender.tab.id;
-    updateIcon(message.iconState, tabId);
+    updateToolbarIcon(message.iconState, tabId);
+    return;
   }
 });
