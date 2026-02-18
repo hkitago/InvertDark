@@ -1,8 +1,8 @@
 # <img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/icon.svg" height="36" valign="bottom"/> InvertDark for Safari Extension
 
-This Safari extension quickly applies dark mode using color inversion and keeps it active as long as you need it. With one simple activation, dark mode stays on until you choose to change it, making browsing more comfortable across different websites and repeat visits.
+This Safari extension is the simplest way to transform any website into a calm, dark theme, with no configuration needed. Once enabled, it stays active across your favorite sites, so you can browse naturally without adjusting settings.
 
-Originally developed to address the problem of bright screens on HDR-compatible large monitors after sunset, this extension offers a quick and easy solution for stress-free nighttime browsing.
+Have you ever been surprised by a blinding white page during late night browsing? Large, modern displays can feel especially harsh after sunset. This extension was created to solve that exact moment, keeping pages easy on the eyes while ensuring videos, images, and embedded content remain clear and natural. Designed to be lightweight and efficient, it runs quietly in the background without slowing down Safari. One action is all it takes to make nighttime browsing more comfortable.
 
 ## Installation & Uninstallation
 
@@ -23,55 +23,22 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 > [!NOTE]  
 > The extension remembers whether dark mode was enabled or disabled for each site, based on the domain name (`window.location.hostname`). This means the setting is applied to all pages within the same domain. For example, if dark mode is turned on for `example.com`, it will also be active on `example.com/page1`, `example.com/page2`, and so on. However, different subdomains such as `blog.example.com` and `shop.example.com` are treated as separate sites.
 
+> [!CAUTION]
+> Some elements on complex websites, such as embedded widgets or certain video players, may not be inverted as expected. This is due to browser security and encapsulation rules (commonly known as Shadow DOM).
+
 ## Icon States
 
 - **Extension Inactive by Default:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon.svg" height="24" valign="bottom"/></code>
 - **Extension Active:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-dark.svg" height="24" valign="bottom"/></code>
-- **Dark Theme Detected:** <code><img src="https://raw.githubusercontent.com/hkitago/InvertDark/refs/heads/main/Shared%20(Extension)/Resources/images/toolbar-icon-site-dark.svg" height="24" valign="bottom"/></code>
 
-## Version History
+## Latest Version
 
-### 1.3.3 - 2024-10-23
+### [26.1] - 2026-02-19
 
-- Updated for the latest OS with new user interface and theme-optimized icons
+- Improved dark mode stability and compatibility with videos and embedded content
+- Simplified the toolbar icon behavior to improve performance
 
-### 1.3.2 - 2024-07-25
-
-- Fixed display issues with certain videos and their thumbnail images for a better viewing experience
-- Refined toolbar icon display logic to ensure consistent and stable operation
-
-### 1.3.1 - 2024-06-04
-
-- Improved image detection for a better dark mode experience.
-- Fixed an issue where links on some websites were hard to read due to low contrast with the background.
-- Adjusted app names and phrasing in certain languages to improve localization.
-- Changed the minimum version requirement for compatibility.
-
-### 1.3 - 2024-11-22
-
-- Fixed video and background image inversion for better display
-- Updated app icon to custom design
-
-### 1.2 - 2024-10-30
-
-- Fixed issues with enabling the extension on already opened web pages.
-
-### 1.1
-
-#### **iOS/iPadOS** - 2024-10-23
-
-- Initial release with extended features from macOS version
-
-#### **macOS** - 2024-10-16
-
-- Improved compatibility with page styles and streamlined design settings
-- Added support for all languages in the App Store
-
-### 1.0
-
-#### **macOS** - 2024-10-13
-
-- Initial release with basic features
+Previous Updates: [CHANGELOG.md](./CHANGELOG.md)
 
 ## Compatibility
 
