@@ -10,7 +10,7 @@
 
   const CSS_CONTENT = `
     html[data-invertdark-active="true"]:not([data-dark-mode-context="sub-frame"]) {
-      background-color: rgb(35, 35, 33) !important;
+      background-color: rgb(220, 220, 222) !important;
     }
 
     html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] {
