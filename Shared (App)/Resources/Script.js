@@ -435,11 +435,36 @@ function openSettings() {
     webkit.messageHandlers.controller.postMessage("open-settings");
 }
 
-document.querySelector("button.open-preferences").addEventListener("click", openPreferences);
-document.querySelector("button.open-settings").addEventListener("click", openSettings);
-
 function openSupport() {
     webkit.messageHandlers.controller.postMessage("open-support");
 }
 
-document.querySelector("button.support-button").addEventListener("click", openSupport);
+const initializeScript = async () => {
+  try {
+    const btn = document.querySelector("button.support-button");
+    btn.addEventListener("click", openSupport);
+
+    btn.addEventListener("touchstart", (event) => {
+      event.target.style.opacity = '0.5';
+    });
+    btn.addEventListener("touchend", (event) => {
+      event.target.style.opacity = 'initial';
+    });
+    btn.addEventListener("touchcancel", (event) => {
+      event.target.style.opacity = 'initial';
+    });
+
+    document.querySelector("button.open-preferences").addEventListener("click", openPreferences);
+    document.querySelector("button.open-settings").addEventListener("click", openSettings);
+
+  } catch (error) {
+    console.error('[CloseTabsExtension] Fail to initialize:', error);
+  }
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeScript, { once: true });
+} else {
+  initializeScript();
+}
+
