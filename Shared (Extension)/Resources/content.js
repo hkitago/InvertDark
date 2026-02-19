@@ -1,8 +1,4 @@
 (() => {
-  /* Global variables */
-  let iconState = 'default';
-  let isSiteDarkThemeDetected = false;
-
   const IS_TOP_FRAME = window.self === window.top;
 
   const STYLE_ID = 'InvertDarkStyle';
@@ -83,92 +79,14 @@
   };
 
   const updateIconState = (enabled) => {
-    let state = 'default';
-    if (enabled) {
-      state = 'extension-dark';
-    } else if (isSiteDarkThemeDetected) {
-      state = 'site-dark';
-    }
+    const state = enabled ? 'extension-dark' : 'default';
     browser.runtime.sendMessage({ action: 'UPDATE_ICON', iconState: state });
   };
 
   const checkBackgroundForElement = (element) => {
     const style = window.getComputedStyle(element);
-    if (style.backgroundImage && style.backgroundImage !== 'none') {
-      element.classList.add('invertdark-ext-bg-images');
-    }
-  };
-
-  /* Detection & Background processing */
-//  const detectSiteDarkTheme = () => {
-//   const getRGB = (el) => {
-//     const bg = window.getComputedStyle(el).backgroundColor;
-//     return bg.startsWith('rgb') ? bg.match(/\d+/g).map(Number) : null;
-//   };
-//   const isDark = (rgb) => (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 < 0.5;
-//
-//   const bodyRgb = document.body ? getRGB(document.body) : getRGB(document.documentElement);
-//   isSiteDarkThemeDetected = bodyRgb ? isDark(bodyRgb) : false;
-//  };
-
-//     const detectSiteDarkTheme = () => {
-//       isSiteDarkThemeDetected = findLargeDarkElements();
-//       if (isSiteDarkThemeDetected && document.documentElement.getAttribute('data-invertdark-active') !== 'true') {
-//         iconState = 'site-dark';
-//         browser.runtime.sendMessage({ action: 'UPDATE_ICON', iconState: iconState });
-//       }
-//     };
-//
-//     const isDarkColor = (rgb) => {
-//       const [r, g, b] = rgb;
-//       return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.5;
-//     };
-//     const getRGBColor = (el) => {
-//       const bg = window.getComputedStyle(el).backgroundColor;
-//       if (bg.startsWith('rgb')) return bg.match(/\d+/g).slice(0, 3).map(Number);
-//       return null;
-//     };
-//     const findLargeDarkElements = () => {
-//       const htmlBodyRgb = getRGBColor(document.documentElement) || (document.body ? getRGBColor(document.body) : null);
-//       return htmlBodyRgb ? isDarkColor(htmlBodyRgb) : false;
-//     };
-
-  
-  const detectSiteDarkTheme = () => {
-    const windowHeight = window.innerHeight;
-    const windowWidth = window.innerWidth;
-    const largeElements = [];
-
-    document.querySelectorAll('*').forEach(element => {
-      const rect = element.getBoundingClientRect();
-      const computedStyle = window.getComputedStyle(element);
-
-      if (computedStyle.opacity === '0') return;
-
-      if (rect.width >= windowWidth && rect.height >= windowHeight / 2 && rect.top < windowHeight / 3 && rect.bottom >= windowHeight ) {
-        const rgb = getRGBColor(element);
-        if (rgb && isDarkColor(rgb)) {
-          const zIndex = computedStyle.zIndex;
-          largeElements.push({ element, zIndex: parseInt(zIndex) || 0 });
-          //console.log('Checked element:', element, 'RGB:', rgb);
-        }
-      }
-    });
-
-    const topElement = largeElements.reduce((max, current) => {
-      return current.zIndex > max.zIndex ? current : max;
-    }, { zIndex: -Infinity });
-
-    if (topElement.element) {
-      const rgb = getRGBColor(topElement.element);
-      //console.log('Top element:', topElement.element, 'RGB:', rgb, 'isDarkColor:', rgb ? isDarkColor(rgb) : 'N/A');
-      return rgb ? isDarkColor(rgb) : false;
-    }
-
-    const htmlBodyRgb = getRGBColor(document.documentElement) || getRGBColor(document.body);
-    //console.log('HTML/Body RGB:', htmlBodyRgb, 'isDarkColor:', htmlBodyRgb ? isDarkColor(htmlBodyRgb) : 'N/A');
-//    return htmlBodyRgb ? isDarkColor(htmlBodyRgb) : false;
-    iconState = isDarkColor(htmlBodyRgb) ? 'site-dark' : iconState;
+    const hasBackgroundImage = Boolean(style.backgroundImage && style.backgroundImage !== 'none');
+    element.classList.toggle('invertdark-ext-bg-images', hasBackgroundImage);
   };
 
   // ========================================
@@ -201,20 +119,21 @@
     ensureDarkModeStyles(document);
     syncStateWithBackground();
 
-//    if (IS_TOP_FRAME) {
-//      detectSiteDarkTheme();
-//      browser.runtime.sendMessage({ action: 'UPDATE_ICON', iconState: iconState });
-//    }
-
     const observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(processNodeTree);
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach(processNodeTree);
+        } else if (mutation.type === 'attributes') {
+          checkBackgroundForElement(mutation.target);
+        }
       });
     });
 
     observer.observe(document.documentElement || document.body, {
       childList: true,
-      subtree: true
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'style']
     });
 
     processNodeTree(document.documentElement);
