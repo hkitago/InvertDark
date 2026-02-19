@@ -37,9 +37,6 @@ const updateToolbarIcon = async (iconState, tabId = null) => {
     case 'extension-dark':
       iconPath = 'images/toolbar-icon-dark.svg';
       break;
-    case 'site-dark':
-      iconPath = 'images/toolbar-icon-site-dark.svg';
-      break;
     default:
       iconPath = 'images/toolbar-icon.svg';
       break;
