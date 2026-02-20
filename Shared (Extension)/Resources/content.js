@@ -3,6 +3,53 @@
 
   const STYLE_ID = 'InvertDarkStyle';
   const FILTER_VAL = 'invert(1) hue-rotate(180deg)';
+  const BG_IMAGE_HEURISTICS = {
+    maxWidthPx: 128,
+    maxHeightPx: 128,
+    maxAreaViewportRatio: 0.2,
+    maxTextLength: 24,
+    allowSelectors: 'a, button, [role="img"], .icon, .logo'
+  };
+  const AD_SCAN_HEURISTICS = {
+    fastSelectors: [
+      '.adsbygoogle',
+      '[data-ad]',
+      '[data-ad-client]',
+      '[data-ad-slot]',
+      '[data-uv-creative]',
+      '[data-uv-element]',
+      '[data-creative-element]',
+      '[id*="ad-" i]',
+      '[class*="ad-" i]',
+      '[id*="yads" i]',
+      '[class*="yads" i]',
+      '[id*="banner" i]',
+      '[class*="banner" i]',
+      'iframe[src*="doubleclick.net"]',
+      'iframe[src*="googlesyndication.com"]'
+    ].join(', '),
+    keywordPattern: /\b(ad|ads|advert|banner|sponsor|promoted|doubleclick|googlesyndication|adsbygoogle|gpt|yads|yahooads)\b/i,
+    maxNodesPerAdSubtree: 240
+  };
+  const INCREMENTAL_SCAN_HEURISTICS = {
+    maxNodesPerMutationSubtree: 800
+  };
+  const MEDIA_IFRAME_SELECTORS = [
+    'iframe[src*="youtube" i]',
+    'iframe[src*="vimeo" i]',
+    'iframe[src*="dailymotion" i]',
+    'iframe[src*="jwplayer" i]',
+    'iframe[src*="youtube-nocookie.com" i]',
+    'iframe[src*="mdstrm.com/embed" i]',
+    'iframe[src*="r7.com/player" i]',
+    'iframe[src*="noticias.r7.com/player" i]',
+    'iframe[src*="video.google.com" i]'
+  ];
+  const MEDIA_IFRAME_SELECTOR = MEDIA_IFRAME_SELECTORS.join(',\n    ');
+  const SUBFRAME_MEDIA_IFRAME_SELECTOR = MEDIA_IFRAME_SELECTORS
+    .map((selector) => `html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] ${selector}`)
+    .join(',\n    ');
+  const SKIP_TREE_SCAN_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE']);
 
   const CSS_CONTENT = `
     html[data-invertdark-active="true"]:not([data-dark-mode-context="sub-frame"]) {
@@ -14,8 +61,41 @@
       filter: none !important;
     }
 
-    img, video, svg, canvas, .invertdark-ext-bg-images {
+    img, svg, canvas, .invertdark-ext-bg-images {
       filter: var(--invertdark-re-invert, none) !important;
+    }
+
+    .invertdark-ext-bg-images-pseudo::before,
+    .invertdark-ext-bg-images-pseudo::after {
+      filter: var(--invertdark-re-invert, none) !important;
+    }
+
+    video {
+      filter: var(--invertdark-video-filter, var(--invertdark-re-invert, none)) !important;
+    }
+
+    .vjs-poster,
+    .ytp-cued-thumbnail-overlay-image {
+      filter: var(--invertdark-video-poster-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
+    }
+
+    news-player,
+    .ftscp-plr {
+      filter: var(--invertdark-video-poster-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
+    }
+
+    ${MEDIA_IFRAME_SELECTOR} {
+      filter: var(--invertdark-iframe-media-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
+    }
+
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .ytp-cued-thumbnail-overlay-image,
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] news-player,
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .ftscp-plr {
+      filter: none !important;
+    }
+
+    ${SUBFRAME_MEDIA_IFRAME_SELECTOR} {
+      filter: none !important;
     }
   `;
 
@@ -37,13 +117,14 @@
       html.setAttribute('data-dark-mode-context', 'sub-frame');
       html.style.filter = 'none';
     } else {
+      html.removeAttribute('data-dark-mode-context');
       html.style.filter = enabled ? FILTER_VAL : 'none';
     }
     html.style.setProperty('--invertdark-re-invert', enabled ? FILTER_VAL : 'none');
-
-    if (!IS_TOP_FRAME) {
-      html.setAttribute('data-dark-mode-context', 'sub-frame');
-    }
+    const mediaFilter = enabled ? (isSubFrame ? 'none' : FILTER_VAL) : 'none';
+    html.style.setProperty('--invertdark-video-filter', mediaFilter);
+    html.style.setProperty('--invertdark-video-poster-filter', mediaFilter);
+    html.style.setProperty('--invertdark-iframe-media-filter', mediaFilter);
 
     if (IS_TOP_FRAME) {
       updateIconState(enabled);
@@ -63,19 +144,76 @@
     }
   };
 
-  /* MutationObserver for Shadow DOM and Background Images */
-  const processNodeTree = (node) => {
-    if (node.nodeType !== Node.ELEMENT_NODE) return;
+  const walkElementTree = (root, visitor, maxNodes = Number.POSITIVE_INFINITY) => {
+    if (!root || root.nodeType !== Node.ELEMENT_NODE) return;
+    const stack = [root];
+    let visited = 0;
 
-    // Handle Shadow DOM
-    if (node.shadowRoot && node.shadowRoot.mode === 'open') {
-      ensureDarkModeStyles(node.shadowRoot);
-      Array.from(node.shadowRoot.children).forEach(processNodeTree);
+    while (stack.length > 0 && visited < maxNodes) {
+      const element = stack.pop();
+      if (SKIP_TREE_SCAN_TAGS.has(element.tagName)) {
+        visited += 1;
+        continue;
+      }
+      visitor(element);
+      visited += 1;
+
+      if (element.shadowRoot && element.shadowRoot.mode === 'open') {
+        ensureDarkModeStyles(element.shadowRoot);
+        observeShadowRoot(element.shadowRoot);
+        for (let i = element.shadowRoot.children.length - 1; i >= 0; i -= 1) {
+          stack.push(element.shadowRoot.children[i]);
+        }
+      }
+
+      for (let i = element.children.length - 1; i >= 0; i -= 1) {
+        stack.push(element.children[i]);
+      }
     }
+  };
 
-    // Existing background detection logic (keep class-based)
-    checkBackgroundForElement(node);
-    Array.from(node.children).forEach(processNodeTree);
+  const ensureShadowStylesInTree = (root, maxNodes = Number.POSITIVE_INFINITY) => {
+    if (SKIP_TREE_SCAN_TAGS.has(root?.tagName)) return;
+    walkElementTree(
+      root,
+      () => {},
+      maxNodes
+    );
+  };
+
+  const observedShadowRoots = new WeakSet();
+
+  const handleAddedNode = (node) => {
+    ensureShadowStylesInTree(node, 1200);
+    processIncrementalNodeTree(node);
+    queueAdNodeScan(node);
+  };
+
+  const observeShadowRoot = (shadowRoot) => {
+    if (!shadowRoot || observedShadowRoots.has(shadowRoot)) return;
+    observedShadowRoots.add(shadowRoot);
+
+    const shadowObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            handleAddedNode(node);
+          });
+          return;
+        }
+
+        if (mutation.type === 'attributes' && shouldRecheckOnStyleMutation(mutation.target)) {
+          processIncrementalNodeTree(mutation.target);
+        }
+      });
+    });
+
+    shadowObserver.observe(shadowRoot, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'src']
+    });
   };
 
   const updateIconState = (enabled) => {
@@ -83,10 +221,176 @@
     browser.runtime.sendMessage({ action: 'UPDATE_ICON', iconState: state });
   };
 
+  const hasUrlBackgroundImage = (backgroundImage) => {
+    if (!backgroundImage || backgroundImage === 'none') return false;
+    return /url\s*\(/i.test(backgroundImage);
+  };
+
+  const hasInlineUrlCustomProperty = (element) => {
+    const inlineStyle = element.getAttribute('style') || '';
+    return /--[a-z0-9_-]*(cover|bg|image|thumb|poster)[a-z0-9_-]*\s*:\s*url\s*\(/i.test(inlineStyle);
+  };
+
+  const shouldRecheckOnStyleMutation = (element) => {
+    if (!element || element.nodeType !== Node.ELEMENT_NODE) return false;
+    if (element.tagName === 'IFRAME') return true;
+    if (hasInlineUrlCustomProperty(element)) return true;
+
+    const className = typeof element.className === 'string'
+      ? element.className
+      : (element.getAttribute('class') || '');
+    return /(bstn|headline|cover|photo|thumb|image)/i.test(className);
+  };
+
+  const VIDEO_CONTEXT_SELECTOR = [
+    'video',
+    'source',
+    'track',
+    '[class*="video" i]',
+    '[class*="player" i]',
+    '[class*="poster" i]',
+    '[class*="thumbnail" i]',
+    '[id*="video" i]',
+    '[id*="player" i]',
+    '[id*="poster" i]',
+    '[id*="thumbnail" i]'
+  ].join(', ');
+
+  const isVideoContextElement = (element) => {
+    if (element.matches('video, source, track')) return true;
+    if (element.closest('video')) return true;
+    return Boolean(element.closest(VIDEO_CONTEXT_SELECTOR));
+  };
+
+  const clearBgImageClasses = (element) => {
+    element.classList.remove('invertdark-ext-bg-images');
+    element.classList.remove('invertdark-ext-bg-images-pseudo');
+  };
+
+  const shouldSkipBackgroundProcessing = (element) => {
+    if (element.tagName === 'PICTURE') return true;
+    return isVideoContextElement(element);
+  };
+
   const checkBackgroundForElement = (element) => {
+    if (shouldSkipBackgroundProcessing(element)) {
+      clearBgImageClasses(element);
+      return;
+    }
+
     const style = window.getComputedStyle(element);
-    const hasBackgroundImage = Boolean(style.backgroundImage && style.backgroundImage !== 'none');
+    const hasBackgroundImage = hasUrlBackgroundImage(style.backgroundImage);
+    const hasPseudoBackgroundImage = hasInlineUrlCustomProperty(element);
+    if (!hasBackgroundImage) {
+      element.classList.remove('invertdark-ext-bg-images');
+      element.classList.toggle('invertdark-ext-bg-images-pseudo', hasPseudoBackgroundImage);
+      return;
+    }
+
+    const rect = element.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const area = width * height;
+    const viewportArea = Math.max(window.innerWidth * window.innerHeight, 1);
+    const textLength = (element.textContent || '').trim().length;
+    const hasChildren = element.children.length > 0;
+    const matchesAllowSelector = element.matches(BG_IMAGE_HEURISTICS.allowSelectors);
+
+    const isLargeArea = area > viewportArea * BG_IMAGE_HEURISTICS.maxAreaViewportRatio;
+    const isTooWideOrTall = width > BG_IMAGE_HEURISTICS.maxWidthPx || height > BG_IMAGE_HEURISTICS.maxHeightPx;
+    const looksLikeWrapper = hasChildren && (isTooWideOrTall || isLargeArea);
+    const hasTooMuchText = textLength > BG_IMAGE_HEURISTICS.maxTextLength;
+
+    const shouldApplyClass =
+      matchesAllowSelector || (!isLargeArea && !looksLikeWrapper && !hasTooMuchText && !isTooWideOrTall);
+    element.classList.toggle('invertdark-ext-bg-images', shouldApplyClass);
+    element.classList.remove('invertdark-ext-bg-images-pseudo');
+  };
+
+  const checkAdBackgroundForElement = (element) => {
+    if (shouldSkipBackgroundProcessing(element)) {
+      clearBgImageClasses(element);
+      return;
+    }
+
+    const style = window.getComputedStyle(element);
+    const hasBackgroundImage = hasUrlBackgroundImage(style.backgroundImage);
     element.classList.toggle('invertdark-ext-bg-images', hasBackgroundImage);
+    element.classList.remove('invertdark-ext-bg-images-pseudo');
+  };
+
+  const getElementAdHintText = (element) => {
+    const className = typeof element.className === 'string'
+      ? element.className
+      : (element.getAttribute('class') || '');
+    return [
+      element.id,
+      className,
+      element.getAttribute('name'),
+      element.getAttribute('src'),
+      element.getAttribute('role'),
+      element.getAttribute('aria-label'),
+      element.getAttribute('data-ad'),
+      element.getAttribute('data-ad-client'),
+      element.getAttribute('data-ad-slot'),
+      element.getAttribute('data-uv-element'),
+      element.getAttribute('data-creative-element'),
+      element.getAttribute('data-uv-creative')
+    ].filter(Boolean).join(' ');
+  };
+
+  const isAdRelatedElement = (element) => {
+    if (element.matches(AD_SCAN_HEURISTICS.fastSelectors)) return true;
+    return AD_SCAN_HEURISTICS.keywordPattern.test(getElementAdHintText(element));
+  };
+
+  const processInitialNodeTree = (root) => {
+    walkElementTree(root, checkBackgroundForElement);
+  };
+
+  const processIncrementalNodeTree = (root) => {
+    walkElementTree(root, checkBackgroundForElement, INCREMENTAL_SCAN_HEURISTICS.maxNodesPerMutationSubtree);
+  };
+
+  const processAdNodeTree = (root) => {
+    if (!root || root.nodeType !== Node.ELEMENT_NODE) return;
+
+    const adRoots = new Set();
+    if (isAdRelatedElement(root)) {
+      adRoots.add(root);
+    }
+
+    root.querySelectorAll(AD_SCAN_HEURISTICS.fastSelectors).forEach((element) => {
+      adRoots.add(element);
+    });
+
+    adRoots.forEach((adRoot) => {
+      walkElementTree(adRoot, checkAdBackgroundForElement, AD_SCAN_HEURISTICS.maxNodesPerAdSubtree);
+    });
+  };
+
+  const queuedAdNodes = new Set();
+  let isAdScanScheduled = false;
+
+  const flushAdNodeQueue = () => {
+    isAdScanScheduled = false;
+    queuedAdNodes.forEach((node) => {
+      processAdNodeTree(node);
+    });
+    queuedAdNodes.clear();
+  };
+
+  const queueAdNodeScan = (node) => {
+    if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
+    queuedAdNodes.add(node);
+    if (isAdScanScheduled) return;
+
+    isAdScanScheduled = true;
+    if (typeof window.requestAnimationFrame === 'function') {
+      window.requestAnimationFrame(flushAdNodeQueue);
+    } else {
+      window.setTimeout(flushAdNodeQueue, 16);
+    }
   };
 
   // ========================================
@@ -119,12 +423,20 @@
     ensureDarkModeStyles(document);
     syncStateWithBackground();
 
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
+    processInitialNodeTree(document.documentElement);
+    processAdNodeTree(document.documentElement);
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
         if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach(processNodeTree);
-        } else if (mutation.type === 'attributes') {
-          checkBackgroundForElement(mutation.target);
+          mutation.addedNodes.forEach((node) => {
+            handleAddedNode(node);
+          });
+          return;
+        }
+
+        if (mutation.type === 'attributes' && shouldRecheckOnStyleMutation(mutation.target)) {
+          processIncrementalNodeTree(mutation.target);
         }
       });
     });
@@ -133,10 +445,8 @@
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['class', 'style']
+      attributeFilter: ['style', 'src']
     });
-
-    processNodeTree(document.documentElement);
   };
 
   if (document.readyState !== 'loading') {
