@@ -9,7 +9,7 @@
     maxAreaViewportRatio: 0.2,
     maxTextLength: 24,
     allowSelectors: 'a, button, [role="img"], .icon, .logo',
-    explicitMediaSelectors: '.preview__image, .featured__slide-bg, progressive-image, [data-bg-image], [data-bg-small-image], [background-image]'
+    explicitMediaSelectors: '.preview__image, .featured__slide-bg, progressive-image, [data-bg-image], [data-bg-small-image], [background-image], .thumbBlock[role="img"], [aria-label*="Taboola" i]'
   };
   const AD_SCAN_HEURISTICS = {
     fastSelectors: [
