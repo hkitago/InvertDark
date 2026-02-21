@@ -8,7 +8,8 @@
     maxHeightPx: 128,
     maxAreaViewportRatio: 0.2,
     maxTextLength: 24,
-    allowSelectors: 'a, button, [role="img"], .icon, .logo'
+    allowSelectors: 'a, button, [role="img"], .icon, .logo',
+    explicitMediaSelectors: '.preview__image, .featured__slide-bg, progressive-image, [data-bg-image], [data-bg-small-image], [background-image]'
   };
   const AD_SCAN_HEURISTICS = {
     fastSelectors: [
@@ -39,6 +40,7 @@
     'iframe[src*="vimeo" i]',
     'iframe[src*="dailymotion" i]',
     'iframe[src*="jwplayer" i]',
+    'iframe[src*="instagram.com" i][src*="/embed" i]',
     'iframe[src*="youtube-nocookie.com" i]',
     'iframe[src*="mdstrm.com/embed" i]',
     'iframe[src*="r7.com/player" i]',
@@ -50,6 +52,7 @@
     .map((selector) => `html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] ${selector}`)
     .join(',\n    ');
   const SKIP_TREE_SCAN_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE']);
+  const IS_INSTAGRAM_FRAME = /(^|\.)instagram\.com$/i.test(window.location.hostname);
 
   const CSS_CONTENT = `
     html[data-invertdark-active="true"]:not([data-dark-mode-context="sub-frame"]) {
@@ -63,39 +66,47 @@
 
     img, svg, canvas, .invertdark-ext-bg-images {
       filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important;
     }
 
     .invertdark-ext-bg-images-pseudo::before,
     .invertdark-ext-bg-images-pseudo::after {
       filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important;
     }
 
     video {
       filter: var(--invertdark-video-filter, var(--invertdark-re-invert, none)) !important;
+      -webkit-filter: var(--invertdark-video-filter, var(--invertdark-re-invert, none)) !important;
     }
 
     .vjs-poster,
     .ytp-cued-thumbnail-overlay-image {
       filter: var(--invertdark-video-poster-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
+      -webkit-filter: var(--invertdark-video-poster-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
     }
 
     news-player,
     .ftscp-plr {
       filter: var(--invertdark-video-poster-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
+      -webkit-filter: var(--invertdark-video-poster-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
     }
 
     ${MEDIA_IFRAME_SELECTOR} {
       filter: var(--invertdark-iframe-media-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
+      -webkit-filter: var(--invertdark-iframe-media-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
     }
 
     html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .ytp-cued-thumbnail-overlay-image,
     html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] news-player,
     html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .ftscp-plr {
       filter: none !important;
+      -webkit-filter: none !important;
     }
 
     ${SUBFRAME_MEDIA_IFRAME_SELECTOR} {
       filter: none !important;
+      -webkit-filter: none !important;
     }
   `;
 
@@ -110,18 +121,29 @@
   const applyFinalState = (enabled) => {
     const html = document.documentElement;
     const isSubFrame = window.self !== window.top;
+    const isFramesetSubFrame =
+      isSubFrame &&
+      window.frameElement &&
+      window.frameElement.tagName === 'FRAME';
 
     html.setAttribute('data-invertdark-active', enabled ? 'true' : 'false');
 
     if (isSubFrame) {
       html.setAttribute('data-dark-mode-context', 'sub-frame');
       html.style.filter = 'none';
+      html.style.webkitFilter = 'none';
     } else {
       html.removeAttribute('data-dark-mode-context');
-      html.style.filter = enabled ? FILTER_VAL : 'none';
+      const rootFilter = enabled ? FILTER_VAL : 'none';
+      html.style.filter = rootFilter;
+      html.style.webkitFilter = rootFilter;
     }
-    html.style.setProperty('--invertdark-re-invert', enabled ? FILTER_VAL : 'none');
-    const mediaFilter = enabled ? (isSubFrame ? 'none' : FILTER_VAL) : 'none';
+    const reinvertFilter = enabled ? FILTER_VAL : 'none';
+    const subFrameReinvert = isSubFrame && IS_INSTAGRAM_FRAME ? 'none' : reinvertFilter;
+    html.style.setProperty('--invertdark-re-invert', subFrameReinvert);
+    const mediaFilter = enabled
+      ? (isSubFrame ? (isFramesetSubFrame ? FILTER_VAL : 'none') : FILTER_VAL)
+      : 'none';
     html.style.setProperty('--invertdark-video-filter', mediaFilter);
     html.style.setProperty('--invertdark-video-poster-filter', mediaFilter);
     html.style.setProperty('--invertdark-iframe-media-filter', mediaFilter);
@@ -295,6 +317,7 @@
     const textLength = (element.textContent || '').trim().length;
     const hasChildren = element.children.length > 0;
     const matchesAllowSelector = element.matches(BG_IMAGE_HEURISTICS.allowSelectors);
+    const matchesExplicitMediaSelector = element.matches(BG_IMAGE_HEURISTICS.explicitMediaSelectors);
 
     const isLargeArea = area > viewportArea * BG_IMAGE_HEURISTICS.maxAreaViewportRatio;
     const isTooWideOrTall = width > BG_IMAGE_HEURISTICS.maxWidthPx || height > BG_IMAGE_HEURISTICS.maxHeightPx;
@@ -302,7 +325,9 @@
     const hasTooMuchText = textLength > BG_IMAGE_HEURISTICS.maxTextLength;
 
     const shouldApplyClass =
-      matchesAllowSelector || (!isLargeArea && !looksLikeWrapper && !hasTooMuchText && !isTooWideOrTall);
+      matchesAllowSelector ||
+      matchesExplicitMediaSelector ||
+      (!isLargeArea && !looksLikeWrapper && !hasTooMuchText && !isTooWideOrTall);
     element.classList.toggle('invertdark-ext-bg-images', shouldApplyClass);
     element.classList.remove('invertdark-ext-bg-images-pseudo');
   };
