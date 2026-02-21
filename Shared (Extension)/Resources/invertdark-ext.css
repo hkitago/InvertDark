@@ -1,22 +1,7 @@
-html[data-invertdark-active="true"] {
+html[data-invertdark-active="true"]:not([data-dark-mode-context="sub-frame"]) {
   background-color: rgb(220, 220, 222) !important;
-  filter: invert(1) hue-rotate(180deg) !important;
-}
-
-html[data-invertdark-active="true"] img,
-html[data-invertdark-active="true"] video,
-html[data-invertdark-active="true"] canvas,
-html[data-invertdark-active="true"] svg,
-html[data-invertdark-active="true"] iframe,
-html[data-invertdark-active="true"] .invertdark-ext-bg-images {
-  filter: invert(1) hue-rotate(180deg) !important;
 }
 
 html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] {
-  filter: none !important;
   background-color: transparent !important;
-}
-
-html[data-invertdark-active="true"]:root {
-  background-color: rgb(35, 35, 33) !important;
 }
