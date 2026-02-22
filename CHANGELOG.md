@@ -1,5 +1,10 @@
 # Changelog
 
+## [26.1] - 2026-02-19
+
+- Improved dark mode stability and compatibility with videos and embedded content
+- Simplified the toolbar icon behavior to improve performance
+
 ## [1.3.3] - 2024-10-23
 
 - Updated for the latest OS with new user interface and theme-optimized icons

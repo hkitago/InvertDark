@@ -33,10 +33,9 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 
 ## Latest Version
 
-### [26.1] - 2026-02-19
+### [26.2] - 2026-02-23
 
-- Improved dark mode stability and compatibility with videos and embedded content
-- Simplified the toolbar icon behavior to improve performance
+- Added improved dark mode handling for embedded media, enhancing visual consistency
 
 Previous Updates: [CHANGELOG.md](./CHANGELOG.md)
 
