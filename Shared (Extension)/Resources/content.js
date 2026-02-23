@@ -22,6 +22,7 @@
       '[data-creative-element]',
       '[id*="ad-" i]',
       '[class*="ad-" i]',
+      '[class*="ob-" i]',
       '[id*="yads" i]',
       '[class*="yads" i]',
       '[id*="banner" i]',
@@ -45,7 +46,8 @@
     'iframe[src*="mdstrm.com/embed" i]',
     'iframe[src*="r7.com/player" i]',
     'iframe[src*="noticias.r7.com/player" i]',
-    'iframe[src*="video.google.com" i]'
+    'iframe[src*="video.google.com" i]',
+    'iframe[src*="doubleclick" i]'
   ];
   const MEDIA_IFRAME_SELECTOR = MEDIA_IFRAME_SELECTORS.join(',\n    ');
   const SUBFRAME_MEDIA_IFRAME_SELECTOR = MEDIA_IFRAME_SELECTORS
@@ -452,7 +454,7 @@
   };
 
   // ========================================
-  // Cuing for sanning ads
+  // Queuing for sanning ads
   // ========================================
   const queuedIncrementalNodes = new Set();
   let isIncrementalScanScheduled = false;
