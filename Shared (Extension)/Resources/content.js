@@ -54,6 +54,8 @@
   const SKIP_TREE_SCAN_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE']);
   const IS_INSTAGRAM_FRAME = /(^|\.)instagram\.com$/i.test(window.location.hostname);
 
+  const INPUT_CONTEXT_SELECTOR = 'textarea, [contenteditable="true"], [contenteditable=""], [role="textbox"], [role="combobox"]';
+
   const CSS_CONTENT = `
     html[data-invertdark-active="true"]:not([data-dark-mode-context="sub-frame"]) {
       background-color: rgb(220, 220, 222) !important;
@@ -119,12 +121,11 @@
   };
 
   // ========================================
-  // Managing heavy processing start and stop
+  // Managing heavy processing
   // ========================================
   let domObserver = null;
 
   const startHeavyProcessing = () => {
-    // 既に起動済みなら再スキャンのみ行い、Observerは重複登録しない
     if (!domObserver) {
       domObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -135,7 +136,9 @@
             return;
           }
           if (mutation.type === 'attributes' && shouldRecheckOnStyleMutation(mutation.target)) {
-            processIncrementalNodeTree(mutation.target);
+            if (!isInputContextNode(mutation.target)) {
+              queueIncrementalNodeScan(mutation.target);
+            }
           }
         });
       });
@@ -158,9 +161,6 @@
     domObserver = null;
   };
 
-  // ========================================
-  // Main logic
-  // ========================================
   const applyFinalState = (enabled) => {
     const html = document.documentElement;
     const isSubFrame = window.self !== window.top;
@@ -250,9 +250,17 @@
 
   const observedShadowRoots = new WeakSet();
 
+  const isInputContextNode = (node) => {
+    if (!node || node.nodeType !== Node.ELEMENT_NODE) return false;
+    if (node.matches(INPUT_CONTEXT_SELECTOR)) return true;
+    return Boolean(node.closest(INPUT_CONTEXT_SELECTOR));
+  };
+
   const handleAddedNode = (node) => {
+    if (isInputContextNode(node)) return;
+
     ensureShadowStylesInTree(node, 1200);
-    processIncrementalNodeTree(node);
+    queueIncrementalNodeScan(node);
     queueAdNodeScan(node);
   };
 
@@ -270,7 +278,9 @@
         }
 
         if (mutation.type === 'attributes' && shouldRecheckOnStyleMutation(mutation.target)) {
-          processIncrementalNodeTree(mutation.target);
+          if (!isInputContextNode(mutation.target)) {
+            queueIncrementalNodeScan(mutation.target);
+          }
         }
       });
     });
@@ -437,6 +447,33 @@
     adRoots.forEach((adRoot) => {
       walkElementTree(adRoot, checkAdBackgroundForElement, AD_SCAN_HEURISTICS.maxNodesPerAdSubtree);
     });
+  };
+
+  // ========================================
+  // Cuing for sanning ads
+  // ========================================
+  const queuedIncrementalNodes = new Set();
+  let isIncrementalScanScheduled = false;
+
+  const flushIncrementalNodeQueue = () => {
+    isIncrementalScanScheduled = false;
+    queuedIncrementalNodes.forEach((node) => {
+      processIncrementalNodeTree(node);
+    });
+    queuedIncrementalNodes.clear();
+  };
+
+  const queueIncrementalNodeScan = (node) => {
+    if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
+    queuedIncrementalNodes.add(node);
+    if (isIncrementalScanScheduled) return;
+
+    isIncrementalScanScheduled = true;
+    if (typeof window.requestAnimationFrame === 'function') {
+      window.requestAnimationFrame(flushIncrementalNodeQueue);
+    } else {
+      window.setTimeout(flushIncrementalNodeQueue, 16);
+    }
   };
 
   const queuedAdNodes = new Set();
