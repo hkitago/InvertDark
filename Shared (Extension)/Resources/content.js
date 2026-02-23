@@ -191,14 +191,14 @@
     html.style.setProperty('--invertdark-video-poster-filter', mediaFilter);
     html.style.setProperty('--invertdark-iframe-media-filter', mediaFilter);
 
-    if (IS_TOP_FRAME) {
-      updateIconState(enabled);
-    }
-
     if (enabled) {
       startHeavyProcessing();
     } else {
       stopHeavyProcessing();
+    }
+
+    if (IS_TOP_FRAME) {
+      updateIconState(enabled);
     }
   };
 
@@ -371,6 +371,7 @@
     const viewportArea = Math.max(window.innerWidth * window.innerHeight, 1);
     const textLength = (element.textContent || '').trim().length;
     const hasChildren = element.children.length > 0;
+    const hasMediaChild = element.querySelector('img, svg, canvas, video') !== null;
     const matchesAllowSelector = element.matches(BG_IMAGE_HEURISTICS.allowSelectors);
     const matchesExplicitMediaSelector = element.matches(BG_IMAGE_HEURISTICS.explicitMediaSelectors);
 
@@ -380,6 +381,7 @@
     const hasTooMuchText = textLength > BG_IMAGE_HEURISTICS.maxTextLength;
 
     const shouldApplyClass =
+      !hasMediaChild &&
       matchesAllowSelector ||
       matchesExplicitMediaSelector ||
       (!isLargeArea && !looksLikeWrapper && !hasTooMuchText && !isTooWideOrTall);
