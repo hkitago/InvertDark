@@ -118,6 +118,49 @@
     (root.head || root.documentElement || root).appendChild(style);
   };
 
+  // ========================================
+  // Managing heavy processing start and stop
+  // ========================================
+  let domObserver = null;
+
+  const startHeavyProcessing = () => {
+    // 既に起動済みなら再スキャンのみ行い、Observerは重複登録しない
+    if (!domObserver) {
+      domObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((node) => {
+              handleAddedNode(node);
+            });
+            return;
+          }
+          if (mutation.type === 'attributes' && shouldRecheckOnStyleMutation(mutation.target)) {
+            processIncrementalNodeTree(mutation.target);
+          }
+        });
+      });
+
+      domObserver.observe(document.documentElement || document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['style', 'src']
+      });
+    }
+
+    processInitialNodeTree(document.documentElement);
+    processAdNodeTree(document.documentElement);
+  };
+
+  const stopHeavyProcessing = () => {
+    if (!domObserver) return;
+    domObserver.disconnect();
+    domObserver = null;
+  };
+
+  // ========================================
+  // Main logic
+  // ========================================
   const applyFinalState = (enabled) => {
     const html = document.documentElement;
     const isSubFrame = window.self !== window.top;
@@ -150,6 +193,12 @@
 
     if (IS_TOP_FRAME) {
       updateIconState(enabled);
+    }
+
+    if (enabled) {
+      startHeavyProcessing();
+    } else {
+      stopHeavyProcessing();
     }
   };
 
@@ -196,11 +245,7 @@
 
   const ensureShadowStylesInTree = (root, maxNodes = Number.POSITIVE_INFINITY) => {
     if (SKIP_TREE_SCAN_TAGS.has(root?.tagName)) return;
-    walkElementTree(
-      root,
-      () => {},
-      maxNodes
-    );
+    walkElementTree(root, () => {}, maxNodes);
   };
 
   const observedShadowRoots = new WeakSet();
@@ -447,31 +492,6 @@
 
     ensureDarkModeStyles(document);
     syncStateWithBackground();
-
-    processInitialNodeTree(document.documentElement);
-    processAdNodeTree(document.documentElement);
-
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach((node) => {
-            handleAddedNode(node);
-          });
-          return;
-        }
-
-        if (mutation.type === 'attributes' && shouldRecheckOnStyleMutation(mutation.target)) {
-          processIncrementalNodeTree(mutation.target);
-        }
-      });
-    });
-
-    observer.observe(document.documentElement || document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['style', 'src']
-    });
   };
 
   if (document.readyState !== 'loading') {
