@@ -36,6 +36,19 @@
   const INCREMENTAL_SCAN_HEURISTICS = {
     maxNodesPerMutationSubtree: 800
   };
+
+  const SKIP_BG_PROCESSING = {
+    // Class names that should skip background processing (case-insensitive)
+    classNames: [
+      'compass-fit-ad-img-inner'
+    ],
+    // Tag names that should skip background processing (UPPERCASE)
+    tagNames: new Set(['PICTURE']),
+    // Extra selectors that should skip background processing (evaluated with .closest)
+    // Keep this empty for now; add patterns here when needed.
+    extraSelectors: []
+  };
+
   const MEDIA_IFRAME_SELECTORS = [
     'iframe[src*="youtube" i]',
     'iframe[src*="vimeo" i]',
@@ -47,7 +60,9 @@
     'iframe[src*="r7.com/player" i]',
     'iframe[src*="noticias.r7.com/player" i]',
     'iframe[src*="video.google.com" i]',
-    'iframe[src*="doubleclick" i]'
+    'iframe[src*="doubleclick" i]',
+    'iframe[src*="foxnews.com" i]',
+    'iframe[src*="dailymotion.com" i]'
   ];
   const MEDIA_IFRAME_SELECTOR = MEDIA_IFRAME_SELECTORS.join(',\n    ');
   const SUBFRAME_MEDIA_IFRAME_SELECTOR = MEDIA_IFRAME_SELECTORS
@@ -112,7 +127,41 @@
       filter: none !important;
       -webkit-filter: none !important;
     }
-  `;
+ 
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .player .video_thumbnail .video_thumbnail_image,
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .ytp-cued-thumbnail-overlay-image,
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] news-player,
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .ftscp-plr {
+      filter: none !important;
+      -webkit-filter: none !important;
+    }
+
+    html[data-invertdark-active="true"] [aria-label*="Taboola" i][role="img"] {
+      filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important;
+    }
+
+    .ob-rec-image {
+      filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important;  
+    }
+  
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] [data-uv-element*="yads" i],
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] [id*="compass-fit-" i] {
+      filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important;
+    }
+
+    html[data-invertdark-active="true"] [gtm-jack-info] {
+      filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important;
+    }
+
+    [data-testid="betamax-poster"] {
+      filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important;  
+    }
+ `;
 
   const ensureDarkModeStyles = (root = document) => {
     if (!root || root.getElementById(STYLE_ID)) return;
@@ -347,7 +396,24 @@
   };
 
   const shouldSkipBackgroundProcessing = (element) => {
-    if (element.tagName === 'PICTURE') return true;
+    // Class name based skip (case-insensitive)
+    const classNameLower = ((typeof element.className === 'string'
+      ? element.className
+      : (element.className && element.className.baseVal) || '')
+    ).toLowerCase();
+    if (SKIP_BG_PROCESSING.classNames.some((name) => classNameLower.includes(name))) return true;
+
+    // Tag name based skip
+    if (SKIP_BG_PROCESSING.tagNames.has(element.tagName)) return true;
+
+    // Selector based skip via closest
+    if (SKIP_BG_PROCESSING.extraSelectors.length > 0) {
+      for (const sel of SKIP_BG_PROCESSING.extraSelectors) {
+        if (element.closest(sel)) return true;
+      }
+    }
+
+    // Video-related contexts are handled elsewhere
     return isVideoContextElement(element);
   };
 
@@ -454,7 +520,7 @@
   };
 
   // ========================================
-  // Queuing for sanning ads
+  // Queuing for scanning ads
   // ========================================
   const queuedIncrementalNodes = new Set();
   let isIncrementalScanScheduled = false;
@@ -541,3 +607,4 @@
     document.addEventListener('DOMContentLoaded', initializeContent, { once: true });
   }
 })();
+
