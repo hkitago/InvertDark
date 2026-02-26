@@ -8,8 +8,8 @@
     maxHeightPx: 128,
     maxAreaViewportRatio: 0.2,
     maxTextLength: 24,
-    allowSelectors: 'a, button, [role="img"], .icon, .logo',
-    explicitMediaSelectors: '.preview__image, .featured__slide-bg, progressive-image, [data-bg-image], [data-bg-small-image], [background-image], .thumbBlock[role="img"], [aria-label*="Taboola" i]'
+    allowSelectors: 'a, button, [role="img"], .icon, .logo, .hero, .mv, .kv, .main-visual, .page-header, .section-hero, .visual-header, .header-band, .uritai_main',
+    explicitMediaSelectors: '.profile, .preview__image, .featured__slide-bg, progressive-image, [data-bg-image], [data-bg-small-image], [background-image], .thumbBlock[role="img"], [aria-label*="Taboola" i]'
   };
   const AD_SCAN_HEURISTICS = {
     fastSelectors: [
@@ -141,13 +141,14 @@
       -webkit-filter: var(--invertdark-re-invert, none) !important;
     }
 
-    .ob-rec-image {
+    .ob-rec-image, .creative__image, .logly-lift-ad-img-inner {
       filter: var(--invertdark-re-invert, none) !important;
       -webkit-filter: var(--invertdark-re-invert, none) !important;  
     }
   
     html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] [data-uv-element*="yads" i],
-    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] [id*="compass-fit-" i] {
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] [id*="compass-fit-" i],
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] [id*="yads" i] {
       filter: var(--invertdark-re-invert, none) !important;
       -webkit-filter: var(--invertdark-re-invert, none) !important;
     }
@@ -157,7 +158,8 @@
       -webkit-filter: var(--invertdark-re-invert, none) !important;
     }
 
-    [data-testid="betamax-poster"] {
+    [data-testid="betamax-poster"],
+    [data-host="https://www.dailymail.co.uk"] {
       filter: var(--invertdark-re-invert, none) !important;
       -webkit-filter: var(--invertdark-re-invert, none) !important;  
     }
@@ -445,14 +447,32 @@
 
     const isLargeArea = area > viewportArea * BG_IMAGE_HEURISTICS.maxAreaViewportRatio;
     const isTooWideOrTall = width > BG_IMAGE_HEURISTICS.maxWidthPx || height > BG_IMAGE_HEURISTICS.maxHeightPx;
-    const looksLikeWrapper = hasChildren && (isTooWideOrTall || isLargeArea);
+    const isCover = style.backgroundSize === 'cover';
+    const looksLikeWrapper = hasChildren && (isTooWideOrTall || isLargeArea || isCover);
     const hasTooMuchText = textLength > BG_IMAGE_HEURISTICS.maxTextLength;
 
+    // Detect header-like band: fixed-ish height, spans most of viewport width, and uses background-size: cover
+    const isHeaderBandCandidate = (() => {
+      if (!isCover) return false;
+      const headerMinHeight = 80;
+      const headerMaxHeight = 400;
+      const widthCoversViewport = width >= Math.max(window.innerWidth, 1) * 0.8;
+      const heightLooksFixed = height >= headerMinHeight && height <= headerMaxHeight;
+      const textOK = textLength <= 200; // allow a headline and small subtext
+      return widthCoversViewport && heightLooksFixed && textOK;
+    })();
+
+    // If it looks like a header band, don't treat it as a generic wrapper
+    const effectiveLooksLikeWrapper = isHeaderBandCandidate ? false : looksLikeWrapper;
+
     const shouldApplyClass =
-      !hasMediaChild &&
-      matchesAllowSelector ||
-      matchesExplicitMediaSelector ||
-      (!isLargeArea && !looksLikeWrapper && !hasTooMuchText && !isTooWideOrTall);
+      !hasMediaChild && (
+        matchesAllowSelector ||
+        matchesExplicitMediaSelector ||
+        (!isLargeArea && !effectiveLooksLikeWrapper && !hasTooMuchText && !isTooWideOrTall) ||
+        isHeaderBandCandidate
+      );
+
     element.classList.toggle('invertdark-ext-bg-images', shouldApplyClass);
     element.classList.remove('invertdark-ext-bg-images-pseudo');
   };
