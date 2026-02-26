@@ -1,5 +1,5 @@
 (() => {
-  const IS_TOP_FRAME = window.self === window.top;
+  let runtimeIsTopFrame = true;
 
   const STYLE_ID = 'InvertDarkStyle';
   const FILTER_VAL = 'invert(1) hue-rotate(180deg)';
@@ -99,28 +99,9 @@
       -webkit-filter: var(--invertdark-video-filter, var(--invertdark-re-invert, none)) !important;
     }
 
-    .vjs-poster,
-    .ytp-cued-thumbnail-overlay-image {
-      filter: var(--invertdark-video-poster-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
-      -webkit-filter: var(--invertdark-video-poster-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
-    }
-
-    news-player,
-    .ftscp-plr {
-      filter: var(--invertdark-video-poster-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
-      -webkit-filter: var(--invertdark-video-poster-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
-    }
-
     ${MEDIA_IFRAME_SELECTOR} {
       filter: var(--invertdark-iframe-media-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
       -webkit-filter: var(--invertdark-iframe-media-filter, var(--invertdark-video-filter, var(--invertdark-re-invert, none))) !important;
-    }
-
-    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .ytp-cued-thumbnail-overlay-image,
-    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] news-player,
-    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .ftscp-plr {
-      filter: none !important;
-      -webkit-filter: none !important;
     }
 
     ${SUBFRAME_MEDIA_IFRAME_SELECTOR} {
@@ -130,13 +111,14 @@
  
     html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .player .video_thumbnail .video_thumbnail_image,
     html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .ytp-cued-thumbnail-overlay-image,
-    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] news-player,
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .vjs-poster,
     html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .ftscp-plr {
       filter: none !important;
       -webkit-filter: none !important;
     }
 
-    html[data-invertdark-active="true"] [aria-label*="Taboola" i][role="img"] {
+    html[data-invertdark-active="true"] [aria-label*="Taboola" i][role="img"],
+    video[src*="taboola.com" i] {
       filter: var(--invertdark-re-invert, none) !important;
       -webkit-filter: var(--invertdark-re-invert, none) !important;
     }
@@ -163,6 +145,28 @@
       filter: var(--invertdark-re-invert, none) !important;
       -webkit-filter: var(--invertdark-re-invert, none) !important;  
     }
+
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] [data-tag="video-wrapper"] [class="video-wrap"] img,
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] [data-tag="video-wrapper"] [class="video-wrap"] video {
+      filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important;  
+    }
+
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] [id="ntvVideo"] {
+      filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important;  
+    }
+
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] [id="cto_banner_content"] {
+      filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important; 
+    }
+ 
+    html[data-invertdark-active="true"][data-dark-mode-context="sub-frame"] .video-js video {
+      filter: var(--invertdark-re-invert, none) !important;
+      -webkit-filter: var(--invertdark-re-invert, none) !important; 
+    }
+ 
  `;
 
   const ensureDarkModeStyles = (root = document) => {
@@ -179,48 +183,49 @@
   let domObserver = null;
 
   const startHeavyProcessing = () => {
-    if (!domObserver) {
-      domObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.type === 'childList') {
-            mutation.addedNodes.forEach((node) => {
-              handleAddedNode(node);
-            });
-            return;
-          }
-          if (mutation.type === 'attributes' && shouldRecheckOnStyleMutation(mutation.target)) {
-            if (!isInputContextNode(mutation.target)) {
-              queueIncrementalNodeScan(mutation.target);
-            }
-          }
-        });
-      });
+    if (domObserver) return;
 
-      domObserver.observe(document.documentElement || document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['style', 'src']
+    domObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            handleAddedNode(node);
+          });
+          return;
+        }
+        if (mutation.type === 'attributes' && shouldRecheckOnStyleMutation(mutation.target)) {
+          if (!isInputContextNode(mutation.target)) {
+            queueIncrementalNodeScan(mutation.target);
+          }
+        }
       });
-    }
+    });
+
+    domObserver.observe(document.documentElement || document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'src']
+    });
 
     processInitialNodeTree(document.documentElement);
     processAdNodeTree(document.documentElement);
   };
 
   const stopHeavyProcessing = () => {
-    if (!domObserver) return;
-    domObserver.disconnect();
-    domObserver = null;
+    if (domObserver) {
+      domObserver.disconnect();
+      domObserver = null;
+    }
+    shadowRootObservers.forEach((observer) => {
+      observer.disconnect();
+    });
+    shadowRootObservers.clear();
   };
 
   const applyFinalState = (enabled) => {
     const html = document.documentElement;
-    const isSubFrame = window.self !== window.top;
-    const isFramesetSubFrame =
-      isSubFrame &&
-      window.frameElement &&
-      window.frameElement.tagName === 'FRAME';
+    const isSubFrame = !runtimeIsTopFrame;
 
     html.setAttribute('data-invertdark-active', enabled ? 'true' : 'false');
 
@@ -238,7 +243,7 @@
     const subFrameReinvert = isSubFrame && IS_INSTAGRAM_FRAME ? 'none' : reinvertFilter;
     html.style.setProperty('--invertdark-re-invert', subFrameReinvert);
     const mediaFilter = enabled
-      ? (isSubFrame ? (isFramesetSubFrame ? FILTER_VAL : 'none') : FILTER_VAL)
+      ? (isSubFrame ? 'none' : FILTER_VAL)
       : 'none';
     html.style.setProperty('--invertdark-video-filter', mediaFilter);
     html.style.setProperty('--invertdark-video-poster-filter', mediaFilter);
@@ -250,7 +255,7 @@
       stopHeavyProcessing();
     }
 
-    if (IS_TOP_FRAME) {
+    if (runtimeIsTopFrame) {
       updateIconState(enabled);
     }
   };
@@ -259,6 +264,7 @@
     try {
       const response = await browser.runtime.sendMessage({ action: 'checkState' });
       if (response && typeof response.enabled === 'boolean') {
+        runtimeIsTopFrame = response.isTopFrame !== false;
         applyFinalState(response.enabled);
       }
     } catch (error) {
@@ -301,7 +307,7 @@
     walkElementTree(root, () => {}, maxNodes);
   };
 
-  const observedShadowRoots = new WeakSet();
+  const shadowRootObservers = new Map();
 
   const isInputContextNode = (node) => {
     if (!node || node.nodeType !== Node.ELEMENT_NODE) return false;
@@ -318,8 +324,7 @@
   };
 
   const observeShadowRoot = (shadowRoot) => {
-    if (!shadowRoot || observedShadowRoots.has(shadowRoot)) return;
-    observedShadowRoots.add(shadowRoot);
+    if (!shadowRoot || shadowRootObservers.has(shadowRoot)) return;
 
     const shadowObserver = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -344,6 +349,7 @@
       attributes: true,
       attributeFilter: ['style', 'src']
     });
+    shadowRootObservers.set(shadowRoot, shadowObserver);
   };
 
   const updateIconState = (enabled) => {
@@ -376,6 +382,7 @@
     'video',
     'source',
     'track',
+    'news-player',
     '[class*="video" i]',
     '[class*="player" i]',
     '[class*="poster" i]',
@@ -434,6 +441,21 @@
       return;
     }
 
+    const hasMediaChild = element.querySelector('img, svg, canvas, video') !== null;
+    if (hasMediaChild) {
+      element.classList.remove('invertdark-ext-bg-images');
+      element.classList.remove('invertdark-ext-bg-images-pseudo');
+      return;
+    }
+
+    const matchesAllowSelector = element.matches(BG_IMAGE_HEURISTICS.allowSelectors);
+    const matchesExplicitMediaSelector = element.matches(BG_IMAGE_HEURISTICS.explicitMediaSelectors);
+    if (matchesAllowSelector || matchesExplicitMediaSelector) {
+      element.classList.add('invertdark-ext-bg-images');
+      element.classList.remove('invertdark-ext-bg-images-pseudo');
+      return;
+    }
+
     const rect = element.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
@@ -441,9 +463,6 @@
     const viewportArea = Math.max(window.innerWidth * window.innerHeight, 1);
     const textLength = (element.textContent || '').trim().length;
     const hasChildren = element.children.length > 0;
-    const hasMediaChild = element.querySelector('img, svg, canvas, video') !== null;
-    const matchesAllowSelector = element.matches(BG_IMAGE_HEURISTICS.allowSelectors);
-    const matchesExplicitMediaSelector = element.matches(BG_IMAGE_HEURISTICS.explicitMediaSelectors);
 
     const isLargeArea = area > viewportArea * BG_IMAGE_HEURISTICS.maxAreaViewportRatio;
     const isTooWideOrTall = width > BG_IMAGE_HEURISTICS.maxWidthPx || height > BG_IMAGE_HEURISTICS.maxHeightPx;
@@ -466,12 +485,8 @@
     const effectiveLooksLikeWrapper = isHeaderBandCandidate ? false : looksLikeWrapper;
 
     const shouldApplyClass =
-      !hasMediaChild && (
-        matchesAllowSelector ||
-        matchesExplicitMediaSelector ||
-        (!isLargeArea && !effectiveLooksLikeWrapper && !hasTooMuchText && !isTooWideOrTall) ||
-        isHeaderBandCandidate
-      );
+      (!isLargeArea && !effectiveLooksLikeWrapper && !hasTooMuchText && !isTooWideOrTall) ||
+      isHeaderBandCandidate;
 
     element.classList.toggle('invertdark-ext-bg-images', shouldApplyClass);
     element.classList.remove('invertdark-ext-bg-images-pseudo');
@@ -544,6 +559,26 @@
   // ========================================
   const queuedIncrementalNodes = new Set();
   let isIncrementalScanScheduled = false;
+  const enqueueNodeForTreeScan = (queue, node) => {
+    if (!node || node.nodeType !== Node.ELEMENT_NODE) return false;
+
+    for (const queuedNode of queue) {
+      if (queuedNode === node || queuedNode.contains(node)) {
+        return false;
+      }
+    }
+
+    const descendantsToRemove = [];
+    for (const queuedNode of queue) {
+      if (node.contains(queuedNode)) {
+        descendantsToRemove.push(queuedNode);
+      }
+    }
+    descendantsToRemove.forEach((descendant) => queue.delete(descendant));
+
+    queue.add(node);
+    return true;
+  };
 
   const flushIncrementalNodeQueue = () => {
     isIncrementalScanScheduled = false;
@@ -554,9 +589,8 @@
   };
 
   const queueIncrementalNodeScan = (node) => {
-    if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
-    queuedIncrementalNodes.add(node);
-    if (isIncrementalScanScheduled) return;
+    const wasAdded = enqueueNodeForTreeScan(queuedIncrementalNodes, node);
+    if (!wasAdded || isIncrementalScanScheduled) return;
 
     isIncrementalScanScheduled = true;
     if (typeof window.requestAnimationFrame === 'function') {
@@ -578,9 +612,8 @@
   };
 
   const queueAdNodeScan = (node) => {
-    if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
-    queuedAdNodes.add(node);
-    if (isAdScanScheduled) return;
+    const wasAdded = enqueueNodeForTreeScan(queuedAdNodes, node);
+    if (!wasAdded || isAdScanScheduled) return;
 
     isAdScanScheduled = true;
     if (typeof window.requestAnimationFrame === 'function') {
@@ -627,4 +660,3 @@
     document.addEventListener('DOMContentLoaded', initializeContent, { once: true });
   }
 })();
-
