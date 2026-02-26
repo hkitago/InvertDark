@@ -73,7 +73,10 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action === 'checkState') {
     const darkModeSites = await getDarkModeSites();
     const currentHostname = extractUrl(sender.tab.url);
-    return { enabled: darkModeSites.includes(currentHostname) };
+    return {
+      enabled: darkModeSites.includes(currentHostname),
+      isTopFrame: sender.frameId === 0
+    };
   }
 
   if (message.action === 'UPDATE_ICON') {
