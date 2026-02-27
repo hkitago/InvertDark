@@ -1,5 +1,9 @@
 # Changelog
 
+## [26.2] - 2026-02-23
+
+- Added improved dark mode handling for embedded media, enhancing visual consistency
+
 ## [26.1] - 2026-02-19
 
 - Improved dark mode stability and compatibility with videos and embedded content

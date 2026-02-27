@@ -33,16 +33,17 @@ To uninstall the extension, similarly to the installation process, toggle the ex
 
 ## Latest Version
 
-### [26.2] - 2026-02-23
+### [26.3] - 2026-02-27
 
-- Added improved dark mode handling for embedded media, enhancing visual consistency
+- Improved performance, reducing unnecessary background activity to deliver a faster and more responsive experience
+- Strengthened reliability, preventing visual errors when displaying complex web content
 
 Previous Updates: [CHANGELOG.md](./CHANGELOG.md)
 
 ## Compatibility
 
-- iOS/iPadOS 15+
-- macOS 10.14+
+- iOS/iPadOS 16.6+
+- macOS 12.4+
 
 ## License
 
